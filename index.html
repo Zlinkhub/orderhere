@@ -1,3 +1,18 @@
+<!--
+  index.html
+  - Versi: Form Azayaka Laundry + Admin panel untuk update config.json di GitHub repo
+  - Tujuan: Menyimpan config (logo, nama, warna, layanan) ke file config.json di repo:
+      owner: Zlinkhub
+      repo: azayaka-laundry
+  - Cara pakai singkat:
+    1) Push file ini ke repo (branch yang dipakai oleh GitHub Pages).
+    2) Buka halaman: https://Zlinkhub.github.io/azayaka-laundry/
+    3) Klik "🔐 Admin" -> login (username: admin, password: 1234)
+    4) Isi Personal Access Token (PAT) yang dibuat di GitHub dengan scope repo contents (read/write).
+    5) Edit logo (upload atau paste URL), nama, warna, layanan -> Save to GitHub.
+    6) Setelah save, file config.json di repo akan diperbarui; perubahan terlihat untuk semua pengunjung.
+-->
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -558,6 +573,7 @@ async function saveConfigToGitHub() {
     document.getElementById("adminMsg").textContent = "Terjadi error saat menyimpan. Lihat console.";
   }
 }
+
 /* --- On load: fetch config and apply --- */
 (async function init(){
   // load config from repo (owner/repo default)
@@ -573,6 +589,10 @@ async function saveConfigToGitHub() {
     setTimeout(()=> document.getElementById("browserTop").style.display = "block", 7000);
   }
 })();
+
 </script>
 </body>
 </html>
+
+
+---

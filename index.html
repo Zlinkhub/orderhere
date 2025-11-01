@@ -671,7 +671,6 @@ async function saveToGitHub() {
       }),
     });
 
-
     if (updateResponse.ok) {
       alert('✅ Perubahan berhasil disimpan ke GitHub!');
     } else {
@@ -682,6 +681,10 @@ async function saveToGitHub() {
     alert('⚠️ Terjadi kesalahan saat menghubungi GitHub API.');
   }
 }
+
+
+
+
 
 
 
@@ -788,34 +791,11 @@ function bukaBrowser() {
   }, 800);
 }
 
-<script>
-function kirimPesanan() {
-  const data = {
-    nama: document.getElementById("namaCustomer").value.trim(),
-    nohp: document.getElementById("noCustomer").value.trim(),
-    layanan: document.getElementById("layanan").value.trim(),
-    alamat: document.getElementById("alamat").value.trim(),
-    catatan: document.getElementById("catatan").value.trim()
-  };
 
-  if (!data.nama || !data.nohp || !data.layanan) {
-    alert("⚠️ Lengkapi semua kolom wajib diisi!");
-    return;
-  }
 
-  fetch("https://script.google.com/macros/s/AKfycbyD14my78vD544I9FPuVXp76UXSWDar-OYGEvxPwEfy/dev", {
-    method: "POST",
-    body: JSON.stringify(data),
-  })
-    .then(res => res.text())
-    .then(txt => {
-      alert("✅ Pesanan berhasil dikirim!");
-      document.getElementById("formPemesanan").reset();
-    })
-    .catch(err => {
-      alert("❌ Gagal mengirim pesanan: " + err);
-    });
-}
+</script>
+
 </script>
 </body>
 </html>
+

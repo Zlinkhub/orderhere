@@ -790,7 +790,6 @@ function bukaBrowser() {
 
 <script>
 function kirimPesanan() {
-  // Ambil nilai input dari form
   const data = {
     nama: document.getElementById("namaCustomer").value.trim(),
     nohp: document.getElementById("noCustomer").value.trim(),
@@ -799,25 +798,23 @@ function kirimPesanan() {
     catatan: document.getElementById("catatan").value.trim()
   };
 
-  // Validasi sederhana
   if (!data.nama || !data.nohp || !data.layanan) {
     alert("⚠️ Lengkapi semua kolom wajib diisi!");
     return;
   }
 
-  // Kirim data ke Google Sheets lewat Apps Script
-  fetch("https://script.google.com/macros/s/AKfycbxRl4aoN4_WMrFOZKZ-qVZR7i8uJpfeExmJ2G0-x88aLlnxK1nhIhmEUqmtaGEQDhkI3Q/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyD14my78vD544I9FPuVXp76UXSWDar-OYGEvxPwEfy/dev", {
     method: "POST",
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   })
-  .then(res => res.text())
-  .then(txt => {
-    alert("✅ Pesanan berhasil dikirim!");
-    document.getElementById("formPemesanan").reset();
-  })
-  .catch(err => {
-    alert("❌ Gagal mengirim pesanan: " + err);
-  });
+    .then(res => res.text())
+    .then(txt => {
+      alert("✅ Pesanan berhasil dikirim!");
+      document.getElementById("formPemesanan").reset();
+    })
+    .catch(err => {
+      alert("❌ Gagal mengirim pesanan: " + err);
+    });
 }
 </script>
 </body>

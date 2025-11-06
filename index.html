@@ -30,7 +30,13 @@ form{ display:block; } label{ display:block; font-weight:600; color:#fffbe6; mar
 .actions{ display:flex; gap:12px; margin-top:8px } .admin-send{ background:#25d366; color:#000; padding:10px; border-radius:10px; border:none; cursor:pointer; flex:1; font-weight:700 } .kurir-send{ background:var(--accent-2); color:#000; padding:10px; border-radius:10px; border:none; cursor:pointer; flex:1; font-weight:700 }
 
 .muted{ color:#fff4d6; font-size:13px } footer{ margin-top:14px; text-align:center; color:#fff4d6; font-size:13px }
-
+form {
+  padding: 16px;           /* tambahkan ruang di dalam form */
+  border-radius: 12px;
+  background: rgba(0,0,0,0.25); /* tetap lembut agar kontras */
+  box-sizing: border-box;
+}
+  
 /* admin modal */ .modal-backdrop{ position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999 } .admin-modal{ width:94%; max-width:920px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.35)); padding:16px; border-radius:12px; color:#fff; box-shadow:0 12px 40px rgba(0,0,0,0.6) } .admin-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px } .chip{ background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; } .panel-cta{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 
 /* browser open button top-right */ .open-browser { position: fixed; right:18px; top:12px; z-index:9998; background: rgba(255,255,255,0.06); color:#fff; border-radius:10px; padding:8px 10px; border:1px solid rgba(255,255,255,0.12); cursor:pointer; backdrop-filter: blur(4px); font-size:13px; } .open-browser:hover{ opacity:0.95 }

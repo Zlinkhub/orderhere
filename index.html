@@ -30,6 +30,7 @@
   label{ display:block; font-weight:600; color:#fffbe6; margin-bottom:10px; font-size:13px }
   input[type=text], input[type=tel], input[type=time], select, textarea{
     width:100%; padding:10px; border-radius:8px; border:none; font-size:12px; background:#fff8ee; color:#000;
+    
   }
 
   .btn-group{ display:flex; gap:8px; flex-wrap:wrap;font-size: 12px ; }
@@ -181,7 +182,7 @@
       <div id="adminLoginBox">
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
           <label style="min-width:60px">Username</label>
-          <input id="adminUser" type="text" placeholder="Zeuzi">
+          <input id="adminUser" type="text" placeholder="ZLink">
         </div>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
           <label style="min-width:60px">Password</label>
@@ -208,6 +209,43 @@
               <label>Warna Tema</label>
               <input id="adminWarna" type="color" value="#ff8c00">
             </div>
+<div style="margin-top:10px">
+  <label>Background</label>
+
+  <!-- Pilih warna -->
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+    <input id="adminBgColor" type="color" value="#000000" style="width:50px; height:34px; border:none; border-radius:8px;">
+    <span id="bgColorValue" style="font-size:13px; color:#fff;">#000000</span>
+    <button id="autoGradientBtn" style="padding:6px 8px; border:none; border-radius:6px; background:var(--accent); color:#000; font-weight:600; cursor:pointer;">✨ Gradasi Otomatis</button>
+  </div>
+<!-- Transparansi warna -->
+<div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+  <label style="font-size:13px; color:#fff;">Transparansi Warna:</label>
+  <input id="bgOpacity" type="range" min="0" max="1" step="0.05" value="0.5" style="flex:1;">
+  <span id="bgOpacityVal" style="color:#fff;">0.5</span>
+</div>
+  <!-- Upload gambar -->
+  <p class="muted" style="margin-top:4px">Atau upload gambar (opsional):</p>
+  <input id="bgUpload" type="file" accept="image/*" style="margin-top:4px">
+
+  <button onclick="resetBackground()" style="margin-top:6px; padding:6px 10px; border:none; border-radius:8px; background:#444; color:#fff;">Reset Background</button>
+
+  <!-- Preview -->
+  <div id="bgPreview" style="margin-top:10px; border-radius:10px; height:70px; width:100%; border:1px solid rgba(255,255,255,0.3); background:#222; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; text-shadow:0 0 3px #000;">
+    Preview Background
+  </div>
+<!-- Preset Kustom -->
+<div style="margin-top:10px">
+  <label style="font-size:13px; color:#fff;">🧩 Preset Kustom Anda</label>
+  <div id="customPresets" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;"></div>
+
+  <div style="display:flex; gap:6px; margin-top:6px;">
+    <input id="presetName" type="text" placeholder="Nama preset..." style="flex:1; padding:6px; border-radius:6px; border:none;">
+    <button id="savePresetBtn" style="padding:6px 10px; border:none; border-radius:8px; background:var(--accent); color:#000; font-weight:600;">💾 Simpan</button>
+  </div>
+</div>
+</div>
+            
             <div style="margin-top:10px">
               <label>Nomor WhatsApp Admin</label>
               <input id="adminPhone" type="tel" placeholder="6287...">
@@ -271,6 +309,7 @@ const DEFAULT = {
   namaLaundry: "Azayaka Laundry",
   logo: "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
   warna: "#ff8c00",
+  background: "linear-gradient(180deg, #000000, #ff8c00 80%)",
   layananKiloan: ["Cuci + Setrika", "Cuci Kering Lipat", "Setrika Saja"],
   layananSatuan: ["Dry Clean","Pakaian","Bedcover","Selimut","Sprei","Sprei Set","Karpet","Sepatu","Tas","Topi","Lainnya"],
   links: { "Pricelist": "", "Instagram": "", "Website": "" },
@@ -336,9 +375,11 @@ function applyConfigToUI(){
   document.getElementById("siteTitle").textContent = "🧺 " + (config.namaLaundry || DEFAULT.namaLaundry);
   document.getElementById("footerName").textContent = config.namaLaundry || DEFAULT.namaLaundry;
   document.documentElement.style.setProperty('--accent-2', config.warna || DEFAULT.warna);
+  
   document.documentElement.style.setProperty('--accent', shadeHex(config.warna || DEFAULT.warna, -6) || "#ffa93a");
   populateLayananButtons();
   renderExternalLinks();
+document.body.style.background = config.background || DEFAULT.background;
 }
 
 /* shade helper */
@@ -566,6 +607,7 @@ function handleAdminLogin(){
     document.getElementById("logoUrl").value = config.logo || "";
     document.getElementById("adminNama").value = config.namaLaundry || "";
     document.getElementById("adminWarna").value = config.warna || "#ff8c00";
+document.getElementById("adminBg").value = config.background || DEFAULT.background;
     document.getElementById("adminPhone").value = config.whatsappAdmin || "";
     document.getElementById("kurirPhone").value = config.whatsappKurir || "";
     document.getElementById("ghOwner").value = (config.github && config.github.owner) || DEFAULT.github.owner;
@@ -685,6 +727,7 @@ function previewLocalAdmin(){
   config.logo = logo || config.logo;
   config.namaLaundry = nama || config.namaLaundry;
   config.warna = warna || config.warna;
+config.background = document.getElementById("adminBg").value.trim() || config.background;
   config.whatsappAdmin = adminPhone || config.whatsappAdmin;
   config.whatsappKurir = kurirPhone || config.whatsappKurir;
   // links area parse to config.links but do not persist to github until saved
@@ -740,6 +783,7 @@ async function saveToGitHub(){
   config.logo = document.getElementById("logoUrl").value.trim() || config.logo;
   config.namaLaundry = document.getElementById("adminNama").value.trim() || config.namaLaundry;
   config.warna = document.getElementById("adminWarna").value || config.warna;
+config.background = document.getElementById("adminBg").value.trim() || config.background;
   config.whatsappAdmin = document.getElementById("adminPhone").value.trim() || config.whatsappAdmin;
   config.whatsappKurir = document.getElementById("kurirPhone").value.trim() || config.whatsappKurir;
   config.github = { owner, repo, branch, path };
@@ -849,7 +893,8 @@ function openInBrowser(){
 function saveAdminLocalOnly(){
   config.logo = document.getElementById("logoUrl").value.trim() || config.logo;
   config.namaLaundry = document.getElementById("adminNama").value.trim() || config.namaLaundry;
-  config.warna = document.getElementById("adminWarna").value || config.warna;
+  config.warna = document.config.background = document.getElementById("adminBg").value.trim() || config.background;("adminWarna").value || config.warna;
+  
   config.whatsappAdmin = document.getElementById("adminPhone").value.trim() || config.whatsappAdmin;
   config.whatsappKurir = document.getElementById("kurirPhone").value.trim() || config.whatsappKurir;
   config.github = {
@@ -865,8 +910,224 @@ function saveAdminLocalOnly(){
 
 /* ================== helper: show admin message ================ */
 function showAdminMsg(msg){ try{ document.getElementById("adminMsg").textContent = msg; }catch(e){} }
+/* ================== BACKGROUND MANAGEMENT ================== */
 
-/* expose functions used inline */
+/* ================== BACKGROUND DENGAN GRADASI OTOMATIS ================== */
+
+DEFAULT.background = "linear-gradient(180deg, #000000, #ff8c00 80%)";
+
+/* Terapkan background ke halaman */
+function applyConfigToUI() {
+  document.getElementById("logoImg").src = config.logo || DEFAULT.logo;
+  document.getElementById("siteTitle").textContent = "🧺 " + (config.namaLaundry || DEFAULT.namaLaundry);
+  document.getElementById("footerName").textContent = config.namaLaundry || DEFAULT.namaLaundry;
+  document.documentElement.style.setProperty('--accent', shadeHex(config.warna || DEFAULT.warna, -6) || "#ffa93a");
+  document.documentElement.style.setProperty('--accent-2', config.warna || DEFAULT.warna);
+  document.body.style.background = config.background || DEFAULT.background;
+  populateLayananButtons();
+  renderExternalLinks();
+}
+
+/* Saat admin login, isi nilai background */
+function handleAdminLogin() {
+  const u = document.getElementById("adminUser").value.trim();
+  const p = document.getElementById("adminPass").value.trim();
+  if (u === "ZLink" && p === "1234") {
+    document.getElementById("adminLoginBox").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    document.getElementById("adminNama").value = config.namaLaundry || "";
+    document.getElementById("adminWarna").value = config.warna || "#ff8c00";
+    document.getElementById("adminBgColor").value = config.background?.startsWith("#") ? config.background : "#000000";
+    document.getElementById("bgColorValue").textContent = config.background?.startsWith("#") ? config.background : "#000000";
+    updateBgPreview();
+    document.getElementById("adminMsg").textContent = "✅ Login berhasil sebagai Admin.";
+  } else alert("Username / password salah.");
+}
+
+/* Preview background */
+function updateBgPreview() {
+  const preview = document.getElementById("bgPreview");
+  if (!preview) return;
+  preview.style.background = config.background || DEFAULT.background;
+  preview.textContent = "";
+}
+
+/* Ubah warna */
+document.getElementById("adminBgColor").addEventListener("input", (e) => {
+  const color = e.target.value;
+  document.getElementById("bgColorValue").textContent = color;
+  config.background = color;
+  document.body.style.background = color;
+  saveLocalConfig();
+  updateBgPreview();
+});
+
+/* Upload gambar */
+document.getElementById("bgUpload").addEventListener("change", (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataURL = e.target.result;
+    config.background = `url('${dataURL}') center/cover no-repeat fixed`;
+    document.body.style.background = config.background;
+    saveLocalConfig();
+    updateBgPreview();
+    showToast("Background gambar diterapkan. Klik 'Simpan ke GitHub' untuk menyimpan.");
+  };
+  reader.readAsDataURL(f);
+});
+
+/* Tombol gradasi otomatis */
+document.getElementById("autoGradientBtn").addEventListener("click", () => {
+  const base = document.getElementById("adminBgColor").value || "#000000";
+  const grad = `linear-gradient(180deg, ${shadeHex(base, -30)}, ${base} 80%)`;
+  config.background = grad;
+  document.body.style.background = grad;
+  saveLocalConfig();
+  updateBgPreview();
+  showToast("Gradasi otomatis diterapkan 🎨");
+});
+/* ================== CAMPUR FOTO + WARNA (DENGAN OPACITY) ================== */
+let lastUploadedImage = null; // simpan foto terakhir yang diupload
+
+// ubah opacity pakai slider
+document.getElementById("bgOpacity").addEventListener("input", e=>{
+  const val = parseFloat(e.target.value);
+  document.getElementById("bgOpacityVal").textContent = val;
+  applyMixedBackground(val);
+});
+
+// ubah fungsi upload agar menyimpan foto untuk campuran
+document.getElementById("bgUpload").addEventListener("change", (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    lastUploadedImage = e.target.result;
+    applyMixedBackground(parseFloat(document.getElementById("bgOpacity").value));
+    showToast("Background foto + warna diterapkan. Klik 'Simpan ke GitHub' untuk menyimpan.");
+  };
+  reader.readAsDataURL(f);
+});
+
+// fungsi gabungan warna + foto
+function applyMixedBackground(opacity=0.5) {
+  const color = document.getElementById("adminBgColor").value || "#000000";
+  let bg = null;
+  if (lastUploadedImage) {
+    // warna semi transparan di atas foto
+    bg = `linear-gradient(rgba(${hexToRgb(color)},${opacity}), rgba(${hexToRgb(color)},${opacity})), url('${lastUploadedImage}') center/cover no-repeat fixed`;
+  } else {
+    // hanya warna jika belum ada foto
+    bg = color;
+  }
+  config.background = bg;
+  document.body.style.background = bg;
+  updateBgPreview();
+  saveLocalConfig();
+}
+
+/* utilitas ubah hex -> rgb */
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if (hex.length===3) hex = hex.split('').map(x=>x+x).join('');
+  const bigint = parseInt(hex,16);
+  const r = (bigint>>16)&255;
+  const g = (bigint>>8)&255;
+  const b = bigint&255;
+  return `${r},${g},${b}`;
+}
+/* Reset background */
+function resetBackground() {
+  config.background = DEFAULT.background;
+  document.body.style.background = config.background;
+  document.getElementById("adminBgColor").value = "#000000";
+  document.getElementById("bgColorValue").textContent = "#000000";
+  updateBgPreview();
+  saveLocalConfig();
+  showToast("Background direset ke default.");
+}
+window.resetBackground = resetBackground;
+/* ================== PRESET TEMA CEPAT ================== */
+
+function initPresetThemes() {
+  const presets = document.querySelectorAll(".preset-btn");
+  presets.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const bg = btn.dataset.bg;
+      config.background = bg;
+      document.body.style.background = bg;
+      saveLocalConfig();
+      updateBgPreview();
+      showToast(`Tema "${btn.textContent.trim()}" diterapkan 🌈`);
+    });
+  });
+}
+
+/* Jalankan saat panel admin aktif */
+window.addEventListener("DOMContentLoaded", () => {
+  initPresetThemes();
+});
+;
+
+/* --- Simpan ke GitHub --- */
+async function saveToGitHub() {
+  const owner = (document.getElementById("ghOwner").value || DEFAULT.github.owner).trim();
+  const repo = (document.getElementById("ghRepo").value || DEFAULT.github.repo).trim();
+  const branch = (document.getElementById("ghBranch").value || DEFAULT.github.branch).trim();
+  const path = (document.getElementById("ghPath").value || DEFAULT.github.path).trim();
+  const pat = (document.getElementById("ghPAT").value || "").trim();
+  if (!owner || !repo || !path) return alert("Isi Owner / Repo / Path terlebih dahulu.");
+  if (!pat) return alert("Isi PAT untuk menyimpan ke GitHub.");
+
+  // update config
+  config.logo = document.getElementById("logoUrl").value.trim() || config.logo;
+  config.namaLaundry = document.getElementById("adminNama").value.trim() || config.namaLaundry;
+  config.warna = document.getElementById("adminWarna").value || config.warna;
+  config.background = document.getElementById("adminBg").value.trim() || config.background; // ⬅️ penting
+  config.whatsappAdmin = document.getElementById("adminPhone").value.trim() || config.whatsappAdmin;
+  config.whatsappKurir = document.getElementById("kurirPhone").value.trim() || config.whatsappKurir;
+  config.github = { owner, repo, branch, path };
+
+  // kirim ke GitHub
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  const contentStr = JSON.stringify(config, null, 2);
+  const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
+
+  try {
+    const getRes = await fetch(`${apiUrl}?ref=${branch}`, { headers: { Authorization: `token ${pat}` }});
+    let sha = null;
+    if (getRes.ok) {
+      const j = await getRes.json(); sha = j.sha;
+    }
+    const body = { message: "Update config.json via Admin Panel", content: contentB64, branch };
+    if (sha) body.sha = sha;
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { Authorization: `token ${pat}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!putRes.ok) throw new Error(`GitHub Error: ${putRes.status}`);
+    document.getElementById("adminMsg").textContent = "✅ Berhasil menyimpan ke GitHub.";
+    saveLocalConfig();
+    showToast("Config tersimpan ke GitHub dan diterapkan.");
+    await loadRemoteConfigIfExists();
+  } catch (err) {
+    console.error(err);
+    alert("Gagal menyimpan ke GitHub: " + err.message);
+    document.getElementById("adminMsg").textContent = "❌ Gagal menyimpan ke GitHub.";
+  }
+}
+// Reset background ke default
+function resetBackground(){
+  config.background = DEFAULT.background;
+  document.body.style.background = config.background;
+  document.getElementById("adminBg").value = config.background;
+  saveLocalConfig();
+  showToast("Background direset ke default.");
+}
+window.resetBackground = resetBackground;
 window.pilihJenis = pilihJenis;
 window.pilihLayanan = pilihLayanan;
 window.pilihDelivery = pilihDelivery;

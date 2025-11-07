@@ -55,7 +55,7 @@
   border: 0.5px solid rgba(255, 255, 255, 0.2); /* garis tipis */
   border-radius: 10px;
   backdrop-filter: blur(4px); /* efek kaca buram elegan */
-  font-size: 1.5px;
+  font-size: 5px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
@@ -66,6 +66,7 @@
   background-color: rgba(255, 255, 255, 0.15); /* sedikit lebih terang saat hover */
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+  opacity: 0.7;
 }
 
     .logo { text-align: center; margin-bottom: 15px; }
@@ -144,9 +145,9 @@ form label {
 
   <form id="laundryForm" onsubmit="event.preventDefault();">
     <label for="nama">👤 Nama Customer:</label>
-    <input type="text" id="nama" placeholder="Tulis nama anda" required>
+    <input type="text" id="nama" placeholder="Tulis nama anda" required>*
     
-<input type="tel" id="noCustomer" style="display:none">
+   <input type="hidden" id="noCustomer">
 
 
     <div class="service-section">
@@ -162,7 +163,7 @@ form label {
         <label class="title">Pilihan Layanan</label>
         <div class="btn-group" id="layananGroup">
           <!-- layanan akan diisi otomatis dari config / default -->
-        </div>
+        </div>*
       </div>
     </div>
 
@@ -171,7 +172,7 @@ form label {
       <option value="Reguler (3 hari)">Reguler (3 hari)</option>
       <option value="Express (1 hari)">Express (1 hari)</option>
       <option value="Sameday">Sameday</option>
-    </select>
+    </select>*
 
     <label for="delivery">🚚 Delivery:</label>
     <select id="delivery" onchange="updateDeliveryLabels()">
@@ -181,22 +182,29 @@ form label {
     </select>
 
     <label id="labelWaktu" for="waktu">🕒 Waktu Penjemputan:</label>
+<p class="note" id="notewaktu">
+  🕒 Untuk menentukan waktu pesanan sudah bisa dipickup, masuk daftar antrian <b>delivery</b>.</p>
     <input type="time" id="waktu" required>
+    *
 
-    <label id="labelLokasi" for="lokasi">📍 Lokasi Penjemputan:</label>
+    <label id="labelLokasi" for="lokasi">🗺️ Lokasi Penjemputan:</label>
+    <p class="note" id="noteLokasi">📍 Gunakan browser seperti <b>Chrome</b> agar fitur lokasi berfungsi dengan baik.</p>
     <div class="location-row">
       <input type="text" id="lokasi" placeholder="Klik 📍 untuk ambil lokasi otomatis" readonly>
       <button type="button" class="loc-btn" aria-label="Ambil lokasi otomatis" onclick="ambilLokasi()">📍</button>
     </div>
-    <p class="note" id="noteLokasi">📍 Aktifkan lokasi & gunakan browser seperti <b>Chrome</b> agar fitur lokasi berfungsi dengan baik.</p>
 
-    <label for="alamat">🏠 Alamat Singkat:</label>
-    <input type="text" id="alamat" placeholder="Contoh: i01/38" required>
+
+    <label for="alamat">🏠 Alamat/blok/no.rumah: </label>
+    <input type="text" id="alamat" placeholder="Contoh: i01/38 (opsional) jika sudah tag lokasi" required>
+    
+  <label for="note">📝 Catatan: </label>
+    <input type="text" id="note" placeholder="Contoh: request parfume / drop off / dsb (opsional)" required>
 
     <button type="button" class="admin-btn" onclick="kirimPesan('admin')">✉️ Kirim ke Admin</button>
     <button type="button" class="kurir-btn" onclick="kirimPesan('kurir')">🚚 Kirim ke Kurir</button>
 
-    <div class="wa-note">💡 Pastikan WhatsApp Anda aktif sebelum mengirim pesan agar pesanan terkirim dengan lancar.</div>
+    <div class="wa-note">💡 Pastikan WhatsApp Anda aktif sebelum mengirim pesan agar orderan terkirim dengan lancar.</div>
 
     <!-- Admin toggle kecil, tidak mengubah tampilan form utama -->
     <div style="text-align:center; margin-top:8px;">
@@ -210,13 +218,30 @@ form label {
         <input type="text" id="adminUser" placeholder="Username" />
         <input type="password" id="adminPass" placeholder="Password" />
         <label style="margin-left:8px;">GitHub Personal Access Token (PAT)</label>
-        <input type="password" id="githubToken" placeholder="Masukkan PAT untuk update config (aman disimpan di session)" />
+        <input type="password" id="githubToken" placeholder="Masukkan PAT (aman disimpan di session)" />
         <small style="display:block; color:#fff4d6; margin-top:4px;">Token diperlukan hanya untuk menyimpan perubahan ke repo. Buat token di: github.com/settings/tokens (repo contents read/write).</small>
         <button type="button" class="btn" onclick="adminLogin()">Login</button>
       </div>
 
       <div id="adminPanel" style="display:none;">
         <h3 style="margin-top:0;">⚙️ Pengaturan (Admin)</h3>
+
+<!-- Masukkan ke dalam <div id="adminPanel"> ... -->
+<label>Nomor WhatsApp Admin</label>
+<input type="tel" id="adminPhone" class="small" placeholder="adminPhone" />
+
+<label>Nomor WhatsApp Kurir</label>
+<input type="tel" id="kurirPhone" class="small" placeholder="kurirPhone" />
+
+<div style="margin-top:8px;" class="admin-row">
+  <button type="button" class="small" onclick="previewLocalChanges()">Preview (local)</button>
+  <button type="button" class="small" onclick="saveAdminNumbersLocal()" style="background:#2b6;">Simpan Lokal</button>
+  <button type="button" class="small" onclick="saveConfigToGitHub()" style="background:#0a84ff">Save to GitHub</button>
+</div>
+<div id="adminMsg" style="margin-top:10px; color:#fff4d6;"></div>
+
+
+
 
         <label>Logo (upload atau paste URL)</label>
         <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)" />
@@ -551,6 +576,118 @@ function setLogoFromUrl() {
   if (url) document.getElementById("logoImg").src = url;
 }
 
+
+
+// ====== FUNGSI PENYAMARAN NOMOR ======
+function maskPhoneNumber(number) {
+  if (!number) return '';
+  if (number.length <= 6) return number;
+  const visibleStart = number.slice(0, 5);
+  const visibleEnd = number.slice(-3);
+  return `${visibleStart}xxx${visibleEnd}`;
+}
+
+// ====== TAMPIL NOMOR DISAMARKAN SAAT LOAD AWAL ======
+function tampilkanNomorDisamarkan(config) {
+  document.getElementById('waAdmin').value = maskPhoneNumber(config.whatsappAdmin);
+  document.getElementById('waKurir').value = maskPhoneNumber(config.whatsappKurir);
+  document.getElementById('waAdmin').setAttribute('readonly', true);
+  document.getElementById('waKurir').setAttribute('readonly', true);
+}
+
+// ====== TAMPIL NOMOR ASLI SETELAH LOGIN ======
+function tampilkanNomorAsli(config) {
+  document.getElementById('waAdmin').value = config.whatsappAdmin;
+  document.getElementById('waKurir').value = config.whatsappKurir;
+  document.getElementById('waAdmin').removeAttribute('readonly');
+  document.getElementById('waKurir').removeAttribute('readonly');
+}
+
+// ====== LOAD CONFIG.JS DARI GITHUB ======
+let currentConfig = {};
+
+fetch('config.json')
+  .then(res => res.json())
+  .then(config => {
+    currentConfig = config;
+    tampilkanNomorDisamarkan(config);
+  })
+  .catch(err => console.error('Gagal memuat config.json:', err));
+
+// ====== LOGIN ADMIN ======
+function loginAdmin() {
+  const user = document.getElementById('adminUser').value;
+  const pass = document.getElementById('adminPass').value;
+
+  if (user === 'Zlink' && pass === '1234') {
+    alert('✅ Login berhasil!');
+    tampilkanNomorAsli(currentConfig);
+    document.getElementById('adminPanel').style.display = 'block';
+  } else {
+    alert('❌ Username atau password salah!');
+  }
+}
+
+// ====== SIMPAN KE GITHUB ======
+async function saveToGitHub() {
+  const token = document.getElementById('githubToken').value.trim();
+  const repoOwner = document.getElementById('repoOwner').value.trim();
+  const repoName = document.getElementById('repoName').value.trim();
+  const filePath = 'config.json';
+
+  if (!token || !repoOwner || !repoName) {
+    alert('⚠️ Pastikan token, repo owner, dan repo name sudah terisi.');
+    return;
+  }
+
+  // Update konfigurasi berdasarkan input admin
+  currentConfig.whatsappAdmin = document.getElementById('waAdmin').value.trim();
+  currentConfig.whatsappKurir = document.getElementById('waKurir').value.trim();
+  currentConfig.namaLaundry = document.getElementById('namaLaundry').value.trim();
+  currentConfig.footerText = document.getElementById('footerText').value.trim();
+  currentConfig.sosmed1 = document.getElementById('sosmed1').value.trim();
+  currentConfig.sosmed2 = document.getElementById('sosmed2').value.trim();
+  currentConfig.themeColor = document.getElementById('themeColor').value.trim();
+
+  try {
+    // Ambil sha file config.json dari GitHub
+    const shaResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      headers: { Authorization: `token ${token}` },
+    });
+    const shaData = await shaResponse.json();
+    const sha = shaData.sha;
+
+    // Kirim PUT request ke GitHub API
+    const updateResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'Update config.json via Admin Panel',
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(currentConfig, null, 2)))),
+        sha: sha,
+      }),
+    });
+
+    if (updateResponse.ok) {
+      alert('✅ Perubahan berhasil disimpan ke GitHub!');
+    } else {
+      alert('❌ Gagal menyimpan ke GitHub. Periksa token atau izin repo.');
+    }
+  } catch (err) {
+    console.error('Error saat menyimpan ke GitHub:', err);
+    alert('⚠️ Terjadi kesalahan saat menghubungi GitHub API.');
+  }
+}
+
+
+
+
+
+
+
 /* preview local changes without saving to GitHub */
 function previewLocalChanges() {
   const newCfg = {
@@ -653,6 +790,8 @@ function bukaBrowser() {
     window.open(urlSekarang, "_blank");
   }, 800);
 }
+
+
 
 </script>
 

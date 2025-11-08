@@ -1,116 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Azayaka Laundry</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-
-  /* Tombol admin pojok kanan atas */
-  #adminBtn {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 1000;
-    font-size: 14px;
-  }
-
-  /* Modal Login Admin */
-  #adminModal {
-    display: none; 
-    position: fixed; 
-    z-index: 1001; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgba(0,0,0,0.5);
-  }
-
-  #adminModalContent {
-    background-color: #fff;
-    margin: 15% auto; 
-    padding: 20px;
-    border-radius: 12px;
-    width: 300px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-
-  #adminModalContent input {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  #adminModalContent button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 6px;
-    background-color: #28A745;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-  }
-
-  #closeModal {
-    float: right;
-    cursor: pointer;
-    color: red;
-    font-weight: bold;
-  }
-
-</style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Azayaka Laundry - Order</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<h1>Selamat Datang di Azayaka Laundry</h1>
-<p>Silakan isi form pemesanan di bawah...</p>
-
-<!-- Tombol Admin -->
-<button id="adminBtn">Admin</button>
-
-<!-- Modal Login Admin -->
-<div id="adminModal">
-  <div id="adminModalContent">
-    <span id="closeModal">&times;</span>
-    <h3>Login Admin</h3>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="loginAdmin()">Login</button>
+<div class="topbar">
+  <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
+  <div style="flex:1">
+    <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
+    <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
   </div>
 </div>
 
-<script>
-  const adminBtn = document.getElementById('adminBtn');
-  const adminModal = document.getElementById('adminModal');
-  const closeModal = document.getElementById('closeModal');
+<form id="laundryForm" onsubmit="event.preventDefault();">
+  <div>
+    <label>👤 Order atas Nama: *</label>
+    <input id="nama" type="text" placeholder="Nama Anda">
+  </div>
+  <div>
+    <label>📱 Nomor WhatsApp (opsional)</label>
+    <input id="nohp" type="tel" placeholder="WhatsApp aktif">
+  </div>
+  <div>
+    <label>Jenis Laundry *</label>
+    <div class="btn-group" id="jenisGroup">
+      <div class="btn" onclick="pilihJenis('Kiloan', this)">Kiloan</div>
+      <div class="btn" onclick="pilihJenis('Satuan', this)">Satuan</div>
+    </div>
+  </div>
+  <div>
+    <label>Pilihan Layanan *</label>
+    <div class="btn-group" id="layananGroup"></div>
+  </div>
+  <div>
+    <label>⏱️ Estimasi Service *</label>
+    <select id="estimasi">
+      <option value="">-- Pilih estimasi --</option>
+      <option>Reguler (3 hari)</option>
+      <option>Express (1 hari)</option>
+      <option>Sameday</option>
+    </select>
+  </div>
+  <div>
+    <label>🚚 Pilihan Pengiriman *</label>
+    <div class="btn-group" id="deliveryGroup">
+      <div class="btn" onclick="pilihDelivery('Jemput', this)">Jemput</div>
+      <div class="btn" onclick="pilihDelivery('Antar', this)">Antar</div>
+      <div class="btn" onclick="pilihDelivery('Jemput & Antar', this)">Jemput & Antar</div>
+      <div class="btn" onclick="pilihDelivery('Drop Off', this)">Drop Off</div>
+    </div>
+  </div>
+  <div>
+    <label>🕒 Waktu (opsional)</label>
+    <input id="waktu" type="time">
+  </div>
+  <div>
+    <label>📍 Lokasi (opsional)</label>
+    <div class="loc-row">
+      <input id="lokasi" class="loc-input" readonly placeholder="Klik 📍 untuk ambil lokasi otomatis (opsional)">
+      <button type="button" class="loc-btn" onclick="ambilLokasi()">📍</button>
+    </div>
+  </div>
+  <div>
+    <label>🏠 Alamat / blok / no.rumah (opsional)</label>
+    <input id="alamat" type="text" placeholder="Contoh: i01/38">
+  </div>
+  <div>
+    <label>📝 Catatan (opsional)</label>
+    <input id="note" type="text" placeholder="contoh: request parfum">
+  </div>
+  <div class="actions">
+    <button type="button" class="admin-send" onclick="submitOrder('admin')">✉️ Kirim ke Admin</button>
+    <button type="button" class="kurir-send" onclick="submitOrder('kurir')">🚚 Kirim ke Kurir</button>
+  </div>
+  <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
+</form>
 
-  // Tampilkan modal saat tombol admin diklik
-  adminBtn.onclick = () => {
-    adminModal.style.display = 'block';
-  };
+<footer>
+  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
+</footer>
 
-  // Tutup modal
-  closeModal.onclick = () => {
-    adminModal.style.display = 'none';
-  };
-
+<script src="script.js"></script>
+</body>
+</html>
   // Tutup modal saat klik di luar konten
   window.onclick = (event) => {
     if (event.target == adminModal) {

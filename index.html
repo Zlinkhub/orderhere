@@ -1,88 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Azayaka Laundry - Order</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azayaka Laundry</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  header {
+    background-color: #2196F3;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: relative;
+  }
+
+  input, select, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    background-color: #2196F3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background-color: #1976D2;
+  }
+
+  /* Tombol Admin di pojok kanan */
+  .admin-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    color: #2196F3;
+    border: 1px solid #2196F3;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .admin-btn:hover {
+    background-color: #2196F3;
+    color: #fff;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 14px;
+    color: #555;
+    position: relative;
+    padding: 10px;
+  }
+
+  .admin-link-container {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+  }
+
+  .admin-link {
+    color: transparent; /* tersembunyi default */
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+
+  .admin-link-container:hover .admin-link,
+  .admin-link-container:active .admin-link {
+    color: #2196F3; 
+  }
+
+  @media (max-width: 600px) {
+    .admin-link-container {
+      position: static;
+      display: block;
+      margin-top: 5px;
+    }
+    .admin-link {
+      color: #2196F3; /* selalu terlihat di mobile */
+    }
+  }
+</style>
 </head>
 <body>
-<div class="topbar">
-  <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
-  <div style="flex:1">
-    <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
-    <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
-  </div>
+
+<header>
+  <h1>Azayaka Laundry</h1>
+</header>
+
+<div class="container">
+  <button class="admin-btn" onclick="window.location.href='admin.html'">Admin</button>
+  <h2>Form Pemesanan</h2>
+  <form id="laundryForm">
+    <input type="text" name="nama" placeholder="Nama Lengkap" required>
+    <input type="tel" name="wa" placeholder="Nomor WhatsApp" required>
+    <select name="layanan" required>
+      <option value="">Pilih Layanan</option>
+      <option value="cuci_kiloan">Cuci Kiloan</option>
+      <option value="cuci_satuan">Cuci Satuan</option>
+      <option value="setrika_saja">Setrika Saja</option>
+    </select>
+    <textarea name="catatan" placeholder="Catatan (opsional)"></textarea>
+    <button type="submit">Kirim Pesanan</button>
+  </form>
 </div>
 
-<form id="laundryForm" onsubmit="event.preventDefault();">
-  <div>
-    <label>👤 Order atas Nama: *</label>
-    <input id="nama" type="text" placeholder="Nama Anda">
-  </div>
-  <div>
-    <label>📱 Nomor WhatsApp (opsional)</label>
-    <input id="nohp" type="tel" placeholder="WhatsApp aktif">
-  </div>
-  <div>
-    <label>Jenis Laundry *</label>
-    <div class="btn-group" id="jenisGroup">
-      <div class="btn" onclick="pilihJenis('Kiloan', this)">Kiloan</div>
-      <div class="btn" onclick="pilihJenis('Satuan', this)">Satuan</div>
-    </div>
-  </div>
-  <div>
-    <label>Pilihan Layanan *</label>
-    <div class="btn-group" id="layananGroup"></div>
-  </div>
-  <div>
-    <label>⏱️ Estimasi Service *</label>
-    <select id="estimasi">
-      <option value="">-- Pilih estimasi --</option>
-      <option>Reguler (3 hari)</option>
-      <option>Express (1 hari)</option>
-      <option>Sameday</option>
-    </select>
-  </div>
-  <div>
-    <label>🚚 Pilihan Pengiriman *</label>
-    <div class="btn-group" id="deliveryGroup">
-      <div class="btn" onclick="pilihDelivery('Jemput', this)">Jemput</div>
-      <div class="btn" onclick="pilihDelivery('Antar', this)">Antar</div>
-      <div class="btn" onclick="pilihDelivery('Jemput & Antar', this)">Jemput & Antar</div>
-      <div class="btn" onclick="pilihDelivery('Drop Off', this)">Drop Off</div>
-    </div>
-  </div>
-  <div>
-    <label>🕒 Waktu (opsional)</label>
-    <input id="waktu" type="time">
-  </div>
-  <div>
-    <label>📍 Lokasi (opsional)</label>
-    <div class="loc-row">
-      <input id="lokasi" class="loc-input" readonly placeholder="Klik 📍 untuk ambil lokasi otomatis (opsional)">
-      <button type="button" class="loc-btn" onclick="ambilLokasi()">📍</button>
-    </div>
-  </div>
-  <div>
-    <label>🏠 Alamat / blok / no.rumah (opsional)</label>
-    <input id="alamat" type="text" placeholder="Contoh: i01/38">
-  </div>
-  <div>
-    <label>📝 Catatan (opsional)</label>
-    <input id="note" type="text" placeholder="contoh: request parfum">
-  </div>
-  <div class="actions">
-    <button type="button" class="admin-send" onclick="submitOrder('admin')">✉️ Kirim ke Admin</button>
-    <button type="button" class="kurir-send" onclick="submitOrder('kurir')">🚚 Kirim ke Kurir</button>
-  </div>
-  <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
-</form>
-
 <footer>
-  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
+  &copy; 2025 Azayaka Laundry
+  <span class="admin-link-container">
+    <a href="admin.html" class="admin-link">Admin</a>
+  </span>
 </footer>
 
-<script src="script.js"></script>
+<script>
+  const form = document.getElementById('laundryForm');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Pesanan berhasil dikirim!');
+    form.reset();
+  });
+</script>
+
 </body>
 </html>

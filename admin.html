@@ -1,306 +1,182 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Panel — Azayaka Laundry</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Azayaka Laundry</title>
   <style>
-    body{font-family:Inter,Arial,sans-serif;background:#f3f4f6;margin:0;padding:20px}
-    .container{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:18px}
-    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-    label{display:block;margin-top:8px;font-weight:700}
-    input,select,textarea,button{width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;margin-top:6px}
-    button.primary{background:#10b981;color:#fff;border:0;font-weight:700;padding:8px}
-    .small{font-size:13px;color:#6b7280}
-    .logo-preview{width:72px;height:72px;border-radius:10px;background:#eee;overflow:hidden}
-    .price-row{display:flex;gap:8px;align-items:center}
-    .price-row input[type=number]{width:120px}
-    .top{display:flex;justify-content:space-between;align-items:center}
-    .muted{color:#666;font-size:13px}
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #f7f8fc;
+    }
+    header {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    label {
+      font-weight: 600;
+    }
+    .save-btn {
+      background: #4f46e5;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .preview {
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .preview img {
+      max-height: 80px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="top" style="max-width:1100px;margin:auto;margin-bottom:12px">
-    <h2>Admin Panel — Azayaka Laundry</h2>
-    <div class="small">Login: <strong>Zlink</strong> / <strong>1234</strong></div>
-  </div>
+  <header>
+    <h2>🧺 Admin Panel — Azayaka Laundry</h2>
+  </header>
 
-  <div class="container">
-    <div>
-      <div class="card">
-        <h3>Login Admin</h3>
-        <div class="small">Masuk untuk mengubah pengaturan dan menyimpan ke GitHub (PAT disimpan di session).</div>
-        <label>Username</label><input id="admUser" placeholder="Zlink">
-        <label>Password</label><input id="admPass" type="password" placeholder="1234">
-        <button id="btnLogin" class="primary">Login</button>
-        <div id="loginMsg" class="small"></div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>GitHub</h3>
-        <div class="small">Masukkan PAT (scope: repo) dan repo path (owner/repo). PAT disimpan hanya di session.</div>
-        <label>Personal Access Token (PAT)</label><input id="inpPat" type="password" placeholder="ghp_xxx...">
-        <label>Repo Path</label><input id="inpRepo" placeholder="Zlinkhub/orderhere">
-        <button id="btnSavePat" class="primary">Simpan PAT & Repo</button>
-        <div id="patMsg" class="small"></div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Logo, Nama & Bio</h3>
-        <label>Nama Toko</label><input id="inpNama" placeholder="Azayaka Laundry">
-        <label>Bio singkat</label><textarea id="inpBio" rows="3" placeholder="Cepat, bersih..."></textarea>
-        <label>Logo URL</label><input id="inpLogoUrl" placeholder="https://...">
-        <label>Atau Upload Logo (akan disimpan ke repo)</label><input id="inpLogoFile" type="file" accept="image/*">
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-          <div class="logo-preview" id="logoPreview"></div><div class="small">Preview</div>
-        </div>
-        <label>Background Image URL</label><input id="inpBgUrl" placeholder="https://...">
-        <label>Atau Upload Background</label><input id="inpBgFile" type="file" accept="image/*">
-        <label>Opacity Overlay (0-1)</label><input id="inpOpacity" type="number" min="0" max="1" step="0.05" value="0.6">
-        <label>Warna Utama</label><input id="inpWarna" type="color" value="#4f46e5">
-        <label>Warna Gradasi</label><input id="inpWarna2" type="color" value="#06b6d4">
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Nomor & Sosmed</h3>
-        <label>No. WA Admin</label><input id="inpAdminWa" placeholder="628...">
-        <label>No. WA Kurir</label><input id="inpKurirWa" placeholder="628...">
-        <label>Sosial Media (JSON)</label><textarea id="inpSosmed" rows="4" placeholder='{"Instagram":"https://...","TikTok":"https://..."}'></textarea>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Daftar Harga (Satuan)</h3>
-        <div id="pricesBox"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="newItemName" placeholder="Nama item">
-          <input id="newItemPrice" type="number" placeholder="Harga">
-        </div>
-        <button id="btnAddItem" style="margin-top:8px">Tambah Item</button>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Menu Informasi Publik</h3>
-        <small class="muted">Masukkan JSON object, contoh: {"Tentang Kami":"...","Lacak Kurir":"https://..."}</small>
-        <textarea id="inpMenuInfo" rows="6" placeholder='{"Tentang Kami":"...","Harga":"..."}'></textarea>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button id="btnSaveConfig" class="primary">Simpan ke GitHub (config.json)</button>
-        <button id="btnLoadConfig">Load config.json</button>
-      </div>
+  <main>
+    <div class="preview">
+      <img id="previewLogo" src="" alt="Logo Laundry">
+      <h2 id="previewNama">Nama Laundry</h2>
+      <p id="previewBio" style="font-style:italic;">Bio Laundry...</p>
     </div>
 
-    <div>
-      <div class="card">
-        <h3>Preview Real-time</h3>
-        <div style="display:flex;gap:12px">
-          <div style="flex:1"><div id="previewFrame" style="border-radius:10px;overflow:hidden;border:1px solid #eee"></div></div>
-          <div style="width:220px">
-            <div class="small">Preview menampilkan header, daftar harga, dan tampilan tema.</div>
-            <div style="margin-top:12px"><button id="btnPreviewRefresh" class="primary">Refresh Preview</button></div>
-          </div>
-        </div>
-      </div>
+    <label>Nama Toko</label>
+    <input id="nama_toko" placeholder="Masukkan nama laundry">
 
-      <div class="card" style="margin-top:12px">
-        <h3>Operasi Lain</h3>
-        <button id="btnFetchOrders" class="primary">Ambil daftar order hari ini</button>
-        <div id="ordersBox" style="margin-top:8px"></div>
-      </div>
-    </div>
-  </div>
+    <label>Logo (URL)</label>
+    <input id="logo" placeholder="Tempel URL logo">
 
-<script>
-// helper
-const el = id => document.getElementById(id);
-const b64 = s => btoa(unescape(encodeURIComponent(s)));
-const ub64 = s => decodeURIComponent(escape(atob(s)));
+    <label>Bio Laundry</label>
+    <textarea id="bio" rows="2" placeholder="Deskripsi singkat laundry..."></textarea>
 
-// login
-el('btnLogin').addEventListener('click', ()=>{
-  const u = el('admUser').value.trim(), p = el('admPass').value.trim();
-  if(u==='Zlink' && p==='1234'){ sessionStorage.setItem('admin_logged','1'); el('loginMsg').innerText='Login berhasil'; loadConfigToAdmin(); }
-  else el('loginMsg').innerText='Login gagal';
-});
+    <label>Nomor WhatsApp Admin</label>
+    <input id="admin_wa" placeholder="Contoh: 628xxxxxxxxxx">
 
-// save PAT & repo in session
-el('btnSavePat').addEventListener('click', ()=>{
-  const pat = el('inpPat').value.trim(), repo = el('inpRepo').value.trim() || 'Zlinkhub/orderhere';
-  sessionStorage.setItem('admin_pat', pat); sessionStorage.setItem('admin_repo', repo); el('patMsg').innerText='PAT & Repo disimpan di session.';
-});
+    <label>Nomor WhatsApp Kurir</label>
+    <input id="kurir_wa" placeholder="Contoh: 628xxxxxxxxxx">
 
-// load config.json (try local raw first, else via GitHub API)
-async function loadConfigToAdmin(){
-  try{
-    const r = await fetch('config.json'); if(!r.ok) throw new Error('Not found local config');
-    const cfg = await r.json(); populateAdmin(cfg);
-  }catch(e){
-    console.warn('Load via raw failed, try GitHub API');
-    const repo = sessionStorage.getItem('admin_repo') || el('inpRepo').value.trim();
-    if(!repo) return;
-    const url = `https://api.github.com/repos/${repo}/contents/config.json`;
-    const res = await fetch(url);
-    if(!res.ok){ console.warn('Failed fetch config from GitHub'); return; }
-    const j = await res.json(); const cfg = JSON.parse(ub64(j.content)); populateAdmin(cfg);
-  }
-}
+    <label>Warna Utama</label>
+    <input id="warna_utama" type="color" value="#4f46e5">
 
-function populateAdmin(cfg){
-  el('inpNama').value = cfg.nama_toko || '';
-  el('inpBio').value = cfg.bio || '';
-  el('inpLogoUrl').value = cfg.logo || '';
-  if(cfg.logo) el('logoPreview').innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:cover">`;
-  el('inpBgUrl').value = cfg.bg_foto || '';
-  el('inpOpacity').value = cfg.opacity_overlay || 0.6;
-  el('inpWarna').value = cfg.warna_utama || '#4f46e5';
-  el('inpWarna2').value = cfg.warna_gradasi || '#06b6d4';
-  el('inpAdminWa').value = cfg.admin_wa || '';
-  el('inpKurirWa').value = cfg.kurir_wa || '';
-  el('inpRepo').value = cfg.github_repo || sessionStorage.getItem('admin_repo') || 'Zlinkhub/orderhere';
-  el('inpSosmed').value = JSON.stringify(cfg.menu_info||{},null,2);
-  el('inpMenuInfo').value = JSON.stringify(cfg.menu_info||{},null,2);
-  // prices
-  const box = el('pricesBox'); box.innerHTML=''; (cfg.harga_satuan||[]).forEach(it=>{
-    const row = document.createElement('div'); row.className='price-row'; row.style.marginTop='8px';
-    row.innerHTML = `<input value="${it.nama}" class="nm"><input type='number' value='${it.harga}' class='pr'> <button class='del'>Hapus</button>`;
-    box.appendChild(row);
-    row.querySelector('.del').addEventListener('click', ()=>row.remove());
-  });
-}
+    <label>Warna Gradasi Kedua</label>
+    <input id="warna_gradasi" type="color" value="#06b6d4">
 
-// add item
-el('btnAddItem').addEventListener('click', ()=>{
-  const name = el('newItemName').value.trim(); const price = Number(el('newItemPrice').value)||0;
-  if(!name) return alert('Nama kosong');
-  const box = el('pricesBox'); const row = document.createElement('div'); row.className='price-row'; row.style.marginTop='8px';
-  row.innerHTML = `<input value="${name}" class="nm"><input type='number' value='${price}' class='pr'> <button class='del'>Hapus</button>`;
-  box.appendChild(row); row.querySelector('.del').addEventListener('click', ()=>row.remove());
-  el('newItemName').value=''; el('newItemPrice').value='';
-});
+    <label>URL Foto Latar</label>
+    <input id="bg_foto" placeholder="https://...">
 
-// save config.json to GitHub
-el('btnSaveConfig').addEventListener('click', async ()=>{
-  if(!sessionStorage.getItem('admin_logged')) return alert('Login terlebih dahulu');
-  const pat = sessionStorage.getItem('admin_pat') || el('inpPat').value.trim();
-  const repo = el('inpRepo').value.trim() || sessionStorage.getItem('admin_repo');
-  if(!repo) return alert('Masukkan repo path');
-  const cfg = {};
-  cfg.nama_toko = el('inpNama').value.trim();
-  cfg.bio = el('inpBio').value.trim();
-  cfg.logo = el('inpLogoUrl').value.trim();
-  cfg.bg_foto = el('inpBgUrl').value.trim();
-  cfg.opacity_overlay = Number(el('inpOpacity').value)||0.6;
-  cfg.warna_utama = el('inpWarna').value; cfg.warna_gradasi = el('inpWarna2').value;
-  cfg.admin_wa = el('inpAdminWa').value.trim(); cfg.kurir_wa = el('inpKurirWa').value.trim();
-  try{ cfg.menu_info = JSON.parse(el('inpSosmed').value||'{}'); }catch(e){ return alert('Sosmed harus format JSON'); }
-  try{ cfg.menu_info = Object.assign(cfg.menu_info, JSON.parse(el('inpMenuInfo').value||'{}')); }catch(e){}
-  const prices=[]; document.querySelectorAll('#pricesBox .price-row').forEach(r=>{ const n=r.querySelector('.nm').value.trim(); const p=Number(r.querySelector('.pr').value)||0; if(n) prices.push({nama:n,harga:p}); });
-  cfg.harga_satuan = prices;
-  cfg.github_repo = repo;
-  cfg.pat = el('inpPat').value.trim() || sessionStorage.getItem('admin_pat') || '';
+    <label>Opacity Warna (0–1)</label>
+    <input id="opacity_overlay" type="number" step="0.1" min="0" max="1" value="0.5">
 
-  const url = `https://api.github.com/repos/${repo}/contents/config.json`;
-  try{
-    const check = await fetch(url, { headers: pat? { Authorization:`token ${pat}` } : {} });
-    let sha = null;
-    if(check.ok){ const j = await check.json(); sha = j.sha; }
-    const body = { message: 'Update config via admin panel', content: b64(JSON.stringify(cfg,null,2)) };
-    if(sha) body.sha = sha;
-    const put = await fetch(url, { method:'PUT', headers:{ 'Authorization': pat?`token ${pat}`:'', 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-    const res = await put.json();
-    if(put.ok){ alert('✅ config.json tersimpan di repo'); sessionStorage.setItem('admin_repo',repo); sessionStorage.setItem('admin_pat',pat); }
-    else{ console.error(res); alert('Gagal menyimpan: '+(res.message||JSON.stringify(res))); }
-  }catch(err){ console.error(err); alert('Error saat menyimpan ke GitHub'); }
-});
+    <label>Daftar Harga Laundry Satuan</label>
+    <textarea id="harga_satuan" rows="3" placeholder='Contoh: [{"nama":"Kemeja","harga":8000}]'></textarea>
 
-// upload file to repo (assets/)
-async function uploadFileToRepo(file, destName){
-  if(!file) return null;
-  const pat = sessionStorage.getItem('admin_pat') || el('inpPat').value.trim();
-  const repo = el('inpRepo').value.trim() || sessionStorage.getItem('admin_repo');
-  if(!pat || !repo) return null;
-  const reader = new FileReader();
-  return new Promise(res=>{
-    reader.onload = async ()=> {
-      const b64data = reader.result.split(',')[1];
-      const path = `assets/${destName}`;
-      const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-      try{
-        const check = await fetch(url, { headers: { Authorization: `token ${pat}` } });
-        let sha = null; if(check.ok){ const j = await check.json(); sha = j.sha; }
-        const body = { message: `Upload ${destName}`, content: b64data }; if(sha) body.sha = sha;
-        const put = await fetch(url, { method:'PUT', headers: { Authorization: `token ${pat}`, 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-        const jr = await put.json();
-        if(put.ok) res(jr.content.download_url || `https://raw.githubusercontent.com/${repo}/main/${path}`);
-        else { console.error(jr); res(null); }
-      }catch(e){ console.error(e); res(null); }
-    };
-    reader.readAsDataURL(file);
-  });
-}
+    <label>Menu Informasi (misal sosmed atau link lain)</label>
+    <textarea id="menu_info" rows="3" placeholder='Contoh: {"Instagram":"https://instagram.com/azayaka"}'></textarea>
 
-// handle file inputs
-el('inpLogoFile').addEventListener('change', async (ev)=>{
-  const f = ev.target.files[0]; if(!f) return;
-  el('logoPreview').innerText = 'Uploading...';
-  const url = await uploadFileToRepo(f, 'logo-'+Date.now()+'.png');
-  if(url){ el('inpLogoUrl').value=url; el('logoPreview').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover">`; } else el('logoPreview').innerText='Upload gagal';
-});
-el('inpBgFile').addEventListener('change', async (ev)=>{
-  const f = ev.target.files[0]; if(!f) return;
-  el('logoPreview').innerText = 'Uploading...';
-  const url = await uploadFileToRepo(f, 'bg-'+Date.now()+'.jpg');
-  if(url){ el('inpBgUrl').value=url; el('logoPreview').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover">`; } else el('logoPreview').innerText='Upload gagal';
-});
+    <label>Personal Access Token (PAT GitHub)</label>
+    <input id="pat" placeholder="Masukkan PAT GitHub">
 
-// preview
-el('btnPreviewRefresh').addEventListener('click', ()=>{ const cfg = buildCfg(); renderPreview(cfg); });
-function buildCfg(){
-  const cfg = {};
-  cfg.nama_toko = el('inpNama').value.trim();
-  cfg.bio = el('inpBio').value.trim();
-  cfg.logo = el('inpLogoUrl').value.trim();
-  cfg.bg_foto = el('inpBgUrl').value.trim();
-  cfg.opacity_overlay = Number(el('inpOpacity').value)||0.6;
-  cfg.warna_utama = el('inpWarna').value; cfg.warna_gradasi = el('inpWarna2').value;
-  cfg.admin_wa = el('inpAdminWa').value.trim(); cfg.kurir_wa = el('inpKurirWa').value.trim();
-  try{ cfg.menu_info = JSON.parse(el('inpSosmed').value||'{}'); }catch(e){ cfg.menu_info={}; }
-  try{ cfg.menu_info = Object.assign(cfg.menu_info, JSON.parse(el('inpMenuInfo').value||'{}')); }catch(e){}
-  const prices=[]; document.querySelectorAll('#pricesBox .price-row').forEach(r=>{ const n=r.querySelector('.nm').value.trim(); const p=Number(r.querySelector('.pr').value)||0; if(n) prices.push({nama:n,harga:p}); });
-  cfg.harga_satuan = prices; cfg.github_repo = el('inpRepo').value.trim()||sessionStorage.getItem('admin_repo')||'Zlinkhub/orderhere';
-  cfg.pat = el('inpPat').value.trim()||sessionStorage.getItem('admin_pat')||'';
-  return cfg;
-}
-function renderPreview(cfg){
-  const frame = el('previewFrame'); frame.innerHTML='';
-  const wrap = document.createElement('div'); wrap.style.padding='12px'; wrap.style.background='#fff'; wrap.style.borderRadius='8px';
-  const header = document.createElement('div'); header.style.display='flex'; header.style.gap='12px'; header.style.alignItems='center';
-  const logoBox = document.createElement('div'); logoBox.style.width='56px'; logoBox.style.height='56px'; logoBox.style.borderRadius='8px'; logoBox.style.overflow='hidden'; logoBox.style.background='#eee';
-  if(cfg.logo) logoBox.innerHTML = `<img src="${cfg.logo}" style="width:100%;height:100%;object-fit:cover">`;
-  const title = document.createElement('div'); title.innerHTML = `<div style="font-weight:800">${cfg.nama_toko||'Azayaka Laundry'}</div><div class='small'>${cfg.bio||''}</div>`;
-  header.appendChild(logoBox); header.appendChild(title); wrap.appendChild(header);
-  const bg = document.createElement('div'); bg.style.height='120px'; bg.style.marginTop='10px'; bg.style.backgroundImage = cfg.bg_foto?`url(${cfg.bg_foto})`:'none'; bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center'; bg.style.borderRadius='8px'; bg.style.position='relative';
-  const ov = document.createElement('div'); ov.style.position='absolute'; ov.style.inset=0; ov.style.background = `linear-gradient(90deg, ${cfg.warna_utama||'#4f46e5'}, ${cfg.warna_gradasi||'#06b6d4'})`; ov.style.opacity = cfg.opacity_overlay || 0.6; bg.appendChild(ov); wrap.appendChild(bg);
-  const priceBox = document.createElement('div'); priceBox.style.marginTop='12px'; priceBox.innerHTML = '<strong>Daftar Harga</strong>';
-  (cfg.harga_satuan||[]).forEach(it=>{ const p=document.createElement('div'); p.style.display='flex'; p.style.justifyContent='space-between'; p.style.padding='6px 0'; p.innerHTML=`<div>${it.nama}</div><div>Rp ${Number(it.harga).toLocaleString()}</div>`; priceBox.appendChild(p); });
-  wrap.appendChild(priceBox);
-  const menuBox = document.createElement('div'); menuBox.style.marginTop='12px'; menuBox.innerHTML = '<strong>Informasi</strong>';
-  for(const k in cfg.menu_info||{}){ const r=document.createElement('div'); r.className='small'; r.style.padding='6px 0'; r.innerHTML = `<strong>${k}</strong>: ${cfg.menu_info[k]}`; menuBox.appendChild(r); }
-  wrap.appendChild(menuBox); frame.appendChild(wrap);
-}
+    <button class="save-btn" onclick="saveConfig()">💾 Simpan ke GitHub</button>
+  </main>
 
-// fetch orders today
-el('btnFetchOrders').addEventListener('click', async ()=>{
-  const repo = el('inpRepo').value.trim() || sessionStorage.getItem('admin_repo'); const pat = sessionStorage.getItem('admin_pat') || el('inpPat').value.trim();
-  if(!repo) return alert('Masukkan repo terlebih dahulu');
-  const today = new Date().toISOString().split('T')[0]; const url = `https://api.github.com/repos/${repo}/contents/order/${today}.json`;
-  const r = await fetch(url,{headers: pat?{'Authorization':`token ${pat}`}:{} });
-  const box = el('ordersBox'); box.innerHTML=''; if(!r.ok) return box.innerText='Tidak ada order hari ini atau file tidak ditemukan.';
-  const j = await r.json(); const arr = JSON.parse(ub64(j.content)); arr.forEach(o=>{ const d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid #eee'; d.innerHTML = `<strong>${o.nama}</strong> — ${o.waktu_display}<div class='small'>${o.jenis} • ${o.layanan} • ${o.alamat} • ${o.lokasi}</div>`; box.appendChild(d); });
-});
+  <script>
+    const repoOwner = "Zlinkhub";
+    const repoName = "orderhere";
+    const configPath = "config.json";
 
-// init: try load config
-loadConfigToAdmin();
-</script>
+    async function loadConfig() {
+      const res = await fetch("config.json");
+      const data = await res.json();
+      for (const key in data) {
+        if (document.getElementById(key)) {
+          const el = document.getElementById(key);
+          el.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
+        }
+      }
+      updatePreview();
+    }
+
+    function updatePreview() {
+      document.getElementById("previewLogo").src = document.getElementById("logo").value;
+      document.getElementById("previewNama").innerText = document.getElementById("nama_toko").value || "Nama Laundry";
+      document.getElementById("previewBio").innerText = document.getElementById("bio").value || "Bio Laundry...";
+    }
+
+    async function saveConfig() {
+      const pat = document.getElementById("pat").value.trim();
+      if (!pat) return alert("Masukkan Personal Access Token (PAT) terlebih dahulu!");
+
+      const config = {
+        nama_toko: document.getElementById("nama_toko").value,
+        logo: document.getElementById("logo").value,
+        bio: document.getElementById("bio").value,
+        admin_wa: document.getElementById("admin_wa").value,
+        kurir_wa: document.getElementById("kurir_wa").value,
+        warna_utama: document.getElementById("warna_utama").value,
+        warna_gradasi: document.getElementById("warna_gradasi").value,
+        bg_foto: document.getElementById("bg_foto").value,
+        opacity_overlay: parseFloat(document.getElementById("opacity_overlay").value),
+        harga_satuan: JSON.parse(document.getElementById("harga_satuan").value || "[]"),
+        menu_info: JSON.parse(document.getElementById("menu_info").value || "{}"),
+        pat: ""
+      };
+
+      const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+      const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${configPath}`;
+
+      const getFile = await fetch(url);
+      const fileData = await getFile.json();
+      const sha = fileData.sha;
+
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": `token ${pat}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "Update config.json via Admin Panel",
+          content: base64,
+          sha
+        })
+      });
+
+      if (res.ok) alert("✅ Konfigurasi berhasil disimpan ke GitHub!");
+      else alert("❌ Gagal menyimpan! Periksa PAT dan izin repositori.");
+    }
+
+    document.querySelectorAll("input, textarea").forEach(el => {
+      el.addEventListener("input", updatePreview);
+    });
+
+    loadConfig();
+  </script>
 </body>
 </html>

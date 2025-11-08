@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Azayaka Laundry - Order</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
+  <div style="flex:1">
+    <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
+    <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
+  </div>
+</div>
+
+<form id="laundryForm" onsubmit="event.preventDefault();">
+  <div>
+    <label>👤 Order atas Nama: *</label>
+    <input id="nama" type="text" placeholder="Nama Anda">
+  </div>
+  <div>
+    <label>📱 Nomor WhatsApp (opsional)</label>
+    <input id="nohp" type="tel" placeholder="WhatsApp aktif">
+  </div>
+  <div>
+    <label>Jenis Laundry *</label>
+    <div class="btn-group" id="jenisGroup">
+      <div class="btn" onclick="pilihJenis('Kiloan', this)">Kiloan</div>
+      <div class="btn" onclick="pilihJenis('Satuan', this)">Satuan</div>
+    </div>
+  </div>
+  <div>
+    <label>Pilihan Layanan *</label>
+    <div class="btn-group" id="layananGroup"></div>
+  </div>
+  <div>
+    <label>⏱️ Estimasi Service *</label>
+    <select id="estimasi">
+      <option value="">-- Pilih estimasi --</option>
+      <option>Reguler (3 hari)</option>
+      <option>Express (1 hari)</option>
+      <option>Sameday</option>
+    </select>
+  </div>
+  <div>
+    <label>🚚 Pilihan Pengiriman *</label>
+    <div class="btn-group" id="deliveryGroup">
+      <div class="btn" onclick="pilihDelivery('Jemput', this)">Jemput</div>
+      <div class="btn" onclick="pilihDelivery('Antar', this)">Antar</div>
+      <div class="btn" onclick="pilihDelivery('Jemput & Antar', this)">Jemput & Antar</div>
+      <div class="btn" onclick="pilihDelivery('Drop Off', this)">Drop Off</div>
+    </div>
+  </div>
+  <div>
+    <label>🕒 Waktu (opsional)</label>
+    <input id="waktu" type="time">
+  </div>
+  <div>
+    <label>📍 Lokasi (opsional)</label>
+    <div class="loc-row">
+      <input id="lokasi" class="loc-input" readonly placeholder="Klik 📍 untuk ambil lokasi otomatis (opsional)">
+      <button type="button" class="loc-btn" onclick="ambilLokasi()">📍</button>
+    </div>
+  </div>
+  <div>
+    <label>🏠 Alamat / blok / no.rumah (opsional)</label>
+    <input id="alamat" type="text" placeholder="Contoh: i01/38">
+  </div>
+  <div>
+    <label>📝 Catatan (opsional)</label>
+    <input id="note" type="text" placeholder="contoh: request parfum">
+  </div>
+  <div class="actions">
+    <button type="button" class="admin-send" onclick="submitOrder('admin')">✉️ Kirim ke Admin</button>
+    <button type="button" class="kurir-send" onclick="submitOrder('kurir')">🚚 Kirim ke Kurir</button>
+  </div>
+  <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
+</form>
+
+<footer>
+  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

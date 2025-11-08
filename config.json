@@ -1,0 +1,12 @@
+{
+  "namaLaundry": "Azayaka Laundry",
+  "logo": "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
+  "warna": "#ff8c00",
+  "background": "linear-gradient(180deg, #000000, #ff8c00 80%)",
+  "layananKiloan": ["Cuci + Setrika", "Cuci Kering Lipat", "Setrika Saja"],
+  "layananSatuan": ["Dry Clean","Pakaian","Bedcover","Selimut","Sprei","Sprei Set","Karpet","Sepatu","Tas","Topi","Lainnya"],
+  "links": { "Pricelist": "", "Instagram": "", "Website": "" },
+  "whatsappAdmin": "6287853561541",
+  "whatsappKurir": "6285246756360",
+  "github": { "owner": "Zlinkhub", "repo": "orderhere", "branch": "main", "path": "config.json" }
+}

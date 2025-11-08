@@ -1,274 +1,236 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Azayaka Laundry</title>
-  <meta name="description" content="Cepat, bersih, dan wangi — siap antar jemput!" />
-  <link rel="icon" id="favicon" href="" />
-  <style>
-    :root{
-      --warna-utama: #4f46e5;
-      --warna-grad: #06b6d4;
-      --overlay-opacity: 0.6;
-    }
-    *{box-sizing:border-box}
-    body {
-      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      margin:0; min-height:100vh; display:flex; align-items:flex-start; justify-content:center;
-      padding:24px; background:linear-gradient(135deg,var(--warna-utama),var(--warna-grad));
-      background-attachment: fixed;
-    }
-    .menu { position:fixed; left:12px; top:12px; background:rgba(255,255,255,0.9); padding:8px 10px; border-radius:10px; cursor:pointer; z-index:50; }
-    .menu-list { position:fixed; left:12px; top:54px; background:#fff; border-radius:10px; padding:8px; box-shadow:0 6px 18px rgba(0,0,0,0.12); display:none; z-index:50; max-width:280px; }
-    header { text-align:center; margin-bottom:18px; color:#fff; width:100%; max-width:760px; }
-    header .brand-wrap { display:flex; gap:12px; align-items:center; justify-content:center; }
-    header .logo { width:80px; height:80px; border-radius:14px; overflow:hidden; background:#fff; display:flex; align-items:center; justify-content:center; }
-    header .logo img { width:100%; height:100%; object-fit:cover; display:block; }
-    header h1 { margin:0; font-size:1.4rem; font-weight:800; color:#fff; }
-    header p { margin:6px 0 0; color:rgba(255,255,255,0.9); font-style:italic; }
-    .form-wrap { width:100%; max-width:760px; background:rgba(255,255,255,0.95); border-radius:14px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.12); }
-    label{display:block;margin-top:10px;font-weight:600;color:#111}
-    input,textarea,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;margin-top:6px;font-size:14px}
-    textarea{min-height:64px;resize:vertical}
-    .pin-btn{background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer;margin-top:8px}
-    .submit-btn{background:linear-gradient(90deg,var(--warna-utama),var(--warna-grad));color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;margin-top:12px;cursor:pointer}
-    .small{font-size:13px;color:#666;margin-top:6px}
-    .row{display:flex;gap:10px}
-    .price-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eee}
-    @media(max-width:820px){ body{padding:12px} header{padding:0 6px} .form-wrap{padding:14px} .row{flex-direction:column} }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Order Laundry — Azayaka Laundry</title>
+<link rel="icon" id="favicon" href=""/>
+<style>
+  :root{--c1:#4CAF50;--c2:#81C784}
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; margin:0; min-height:100vh; background:var(--bg,linear-gradient(135deg,var(--c1),var(--c2))); color:#111;}
+  .menu{position:fixed;left:12px;top:12px;background:#fff;padding:8px 10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);z-index:80;cursor:pointer}
+  .menu-content{position:fixed;left:12px;top:56px;background:#fff;border-radius:10px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.12);display:none;z-index:80;min-width:220px}
+  header{max-width:900px;margin:40px auto 8px;text-align:center;color:#fff}
+  .logo{width:140px;height:140px;border-radius:20px;overflow:hidden;margin:0 auto;background:#fff;display:flex;align-items:center;justify-content:center}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  h1{margin:12px 0 6px;cursor:pointer}
+  p.bio{margin:0;opacity:.95}
+  .card{max-width:760px;margin:18px auto;background:#fff;padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,.08)}
+  label{display:block;margin-top:10px;font-weight:600}
+  input,select,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;margin-top:6px;font-size:15px}
+  .row{display:flex;gap:10px}
+  .btn{background:linear-gradient(90deg,var(--c1),var(--c2));color:#fff;border:0;padding:12px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn-secondary{background:#f3f4f6;color:#111;border:0}
+  .two{display:flex;gap:10px}
+  footer{max-width:760px;margin:20px auto;text-align:center;color:#fff;opacity:.95}
+  @media(max-width:820px){ .row{flex-direction:column} .logo{width:100px;height:100px} }
+</style>
 </head>
 <body>
-  <div class="menu" onclick="toggleMenu()">☰</div>
-  <div class="menu-list" id="menuList"></div>
+  <div class="menu" id="menuBtn">☰</div>
+  <div class="menu-content" id="menuContent"></div>
 
   <header>
-    <div class="brand-wrap">
-      <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo" style="display:none"></div>
-    </div>
-    <h1 id="shopName">Azayaka Laundry</h1>
-    <p id="shopBio">Cepat, bersih, dan wangi — siap antar jemput!</p>
+    <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo" style="display:none"></div>
+    <h1 id="storeName">Laundry</h1>
+    <p class="bio" id="storeBio">Cepat, bersih, wangi — siap antar jemput</p>
   </header>
 
-  <div class="form-wrap" id="formWrap">
+  <div class="card">
     <form id="orderForm">
       <label>Nama</label>
-      <input id="nama" required />
+      <input id="custName" required/>
 
       <label>No. WhatsApp</label>
-      <input id="wa" placeholder="08xxxxxxxxxx" required />
+      <input id="custPhone" placeholder="contoh: 0852xxxxxxx" required/>
 
-      <label>Jenis Laundry</label>
+      <label>Jenis</label>
       <select id="jenis" required>
-        <option value="">Pilih Jenis</option>
-        <option value="Kiloan">Kiloan</option>
-        <option value="Satuan">Satuan</option>
+        <option value="">Pilih</option><option value="Kiloan">Kiloan</option><option value="Satuan">Satuan</option>
       </select>
 
-      <div id="kiloanBlock" style="display:none">
-        <label>Pilihan Kiloan</label>
-        <select id="kiloanPick">
-          <option value="Setrika Saja">Setrika Saja</option>
-          <option value="Cuci Kering Lipat">Cuci Kering Lipat</option>
-          <option value="Cuci + Setrika">Cuci + Setrika</option>
-        </select>
-      </div>
-
-      <div id="satuanBlock" style="display:none">
-        <label>Item Satuan</label>
-        <div id="satuanList"></div>
-        <div class="small">Pilih item dan isi jumlah (qty)</div>
-      </div>
+      <div id="jenisDetail"></div>
 
       <label>Estimasi</label>
-      <select id="estimasi" required>
-        <option value="Reguler (2-3 hari)">Reguler (2-3 hari)</option>
-        <option value="Express (1 hari)">Express (1 hari)</option>
-        <option value="Express Sameday (6 jam)">Express Sameday (6 jam)</option>
+      <select id="estimasi">
+        <option>Reguler (2-3 hari)</option>
+        <option>Express (1 hari)</option>
+        <option>Express Sameday (6 jam)</option>
       </select>
 
       <label>Delivery</label>
-      <select id="delivery" required>
-        <option value="Pick Up">Pick Up</option>
-        <option value="Drop Off">Drop Off</option>
+      <select id="delivery">
+        <option>Drop Off</option><option>Pickup</option>
       </select>
 
-      <label>Waktu (jam)</label>
-      <input id="waktu" type="time" required />
+      <label>Waktu (keinginan)</label>
+      <input id="waktu" type="time"/>
 
       <label>Alamat (opsional jika sudah pin lokasi)</label>
-      <textarea id="alamat"></textarea>
+      <textarea id="alamat" placeholder="Contoh: Jl. Mawar No.1"></textarea>
 
-      <button type="button" class="pin-btn" id="pinBtn">📍 Pin Lokasi Saya</button>
-      <div class="small" id="lokasiInfo">Belum ada lokasi</div>
-
-      <label>Catatan Tambahan (opsional)</label>
-      <textarea id="catatan" placeholder="Contoh: jangan campur warna, parfum: floral"></textarea>
-
-      <button type="submit" class="submit-btn">Kirim Pesanan</button>
+      <div class="two" style="margin-top:12px">
+        <button type="button" class="btn-secondary" id="pinBtn">📍 Pin Lokasi</button>
+        <button type="button" class="btn" id="sendAdminBtn">Kirim ke Admin</button>
+      </div>
     </form>
   </div>
 
-<script>
-/* ---------- Utilities ---------- */
-const b64Encode = s => btoa(unescape(encodeURIComponent(s)));
-const b64Decode = s => decodeURIComponent(escape(atob(s)));
-let CONFIG = {};
+  <footer>
+    <span id="footerText"></span>
+  </footer>
 
-/* ---------- Load config and apply ---------- */
+<script>
+/* ---------- Globals ---------- */
+let CONFIG = {};
+let lokasiLink = "";
+const ownerRepo = "Zlinkhub/orderhere";
+
+/* ---------- Load config ---------- */
 async function loadConfig(){
   try{
-    const res = await fetch('config.json');
-    CONFIG = await res.json();
-  }catch(e){
-    CONFIG = {};
-    console.warn('Tidak dapat load config.json', e);
-  }
+    const r = await fetch('config.json'); CONFIG = await r.json();
+  }catch(e){ CONFIG = {}; console.warn('config.json load failed',e); }
   applyConfig();
 }
 function applyConfig(){
-  document.title = CONFIG.nama_toko || 'Laundry';
-  document.querySelector("meta[name='description']").content = CONFIG.bio || '';
-  const favicon = document.getElementById('favicon');
-  if(CONFIG.logo){ favicon.href = CONFIG.logo; document.getElementById('logoImg').src = CONFIG.logo; document.getElementById('logoImg').style.display='block'; }
-  document.getElementById('shopName').innerText = CONFIG.nama_toko || 'Azayaka Laundry';
-  document.getElementById('shopBio').innerText = CONFIG.bio || '';
-  document.documentElement.style.setProperty('--warna-utama', CONFIG.warna_utama || '#4f46e5');
-  document.documentElement.style.setProperty('--warna-grad', CONFIG.warna_gradasi || '#06b6d4');
-  document.documentElement.style.setProperty('--overlay-opacity', (CONFIG.opacity_overlay!=null)?CONFIG.opacity_overlay:0.6);
-  // background image fallback: if bg_foto present, set body background image combined with gradient
-  if(CONFIG.bg_foto){
-    document.body.style.background = `linear-gradient(135deg, rgba(79,70,229,0.6), rgba(6,182,212,0.6)), url('${CONFIG.bg_foto}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-  }
+  document.getElementById('storeName').innerText = CONFIG.storeName || 'Laundry';
+  document.getElementById('storeBio').innerText = CONFIG.bio || '';
+  document.getElementById('footerText').innerText = `${CONFIG.storeName || 'Laundry'} • ${new Date().getFullYear()}`;
+  if(CONFIG.logo){ const img = document.getElementById('logoImg'); img.src = CONFIG.logo; img.style.display='block'; }
+  // theme
+  document.documentElement.style.setProperty('--c1', CONFIG.theme?.color1 || '#4CAF50');
+  document.documentElement.style.setProperty('--c2', CONFIG.theme?.color2 || '#81C784');
+  // menu links
   renderMenu();
-  renderPriceItems();
 }
 function renderMenu(){
-  const menu = document.getElementById('menuList'); menu.innerHTML='';
-  const info = CONFIG.menu_info || {};
-  for(const k in info){
-    const a = document.createElement('a'); a.href = info[k]; a.target='_blank'; a.innerText = k;
-    menu.appendChild(a);
-  }
-}
-
-/* ---------- Price items (satuan) ---------- */
-function renderPriceItems(){
-  const list = document.getElementById('satuanList'); list.innerHTML='';
-  const arr = CONFIG.harga_satuan || [];
-  arr.forEach((it, idx)=>{
-    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.alignItems='center'; row.style.marginTop='6px';
-    const chk = document.createElement('input'); chk.type='checkbox'; chk.dataset.name = it.nama; chk.dataset.price = it.harga;
-    const lbl = document.createElement('div'); lbl.innerText = `${it.nama} — Rp ${Number(it.harga).toLocaleString()}`; lbl.style.flex='1';
-    const qty = document.createElement('input'); qty.type='number'; qty.min=0; qty.value=0; qty.style.width='90px'; qty.disabled=true;
-    chk.addEventListener('change', ()=>{ qty.disabled = !chk.checked; if(!chk.checked) qty.value=0; });
-    row.appendChild(chk); row.appendChild(lbl); row.appendChild(qty);
-    list.appendChild(row);
-  });
+  const menu = document.getElementById('menuContent'); menu.innerHTML='';
+  const links = CONFIG.links || {};
+  if(links.pricelist) menu.innerHTML += `<a href="${links.pricelist}" target="_blank">Daftar Harga</a>`;
+  if(links.social) menu.innerHTML += `<a href="${links.social}" target="_blank">Sosial Media</a>`;
+  menu.innerHTML += `<a href="#" onclick="showAdminLogin()">Login Admin</a>`;
 }
 
 /* ---------- Menu toggle ---------- */
-function toggleMenu(){ const m = document.getElementById('menuList'); m.style.display = m.style.display==='block' ? 'none' : 'block'; }
+document.getElementById('menuBtn').addEventListener('click', ()=> {
+  const el = document.getElementById('menuContent'); el.style.display = (el.style.display==='block')?'none':'block';
+});
 
-/* ---------- Show layanan based on jenis ---------- */
+/* ---------- jenis detail ---------- */
 document.getElementById('jenis').addEventListener('change', (e)=>{
-  const v = e.target.value;
-  document.getElementById('kiloanBlock').style.display = (v==='Kiloan') ? 'block' : 'none';
-  document.getElementById('satuanBlock').style.display = (v==='Satuan') ? 'block' : 'none';
+  const v = e.target.value; const d = document.getElementById('jenisDetail');
+  if(v==='Kiloan'){
+    d.innerHTML = `<label>Opsi Kiloan</label>
+      <select id="layanan">
+        <option>Cuci + Setrika</option>
+        <option>Cuci Kering Lipat</option>
+        <option>Setrika Saja</option>
+      </select>`;
+  } else if(v==='Satuan'){
+    const satuan = (CONFIG.pricing?.satuan || []).map(x=>`<option data-price="${x.harga}">${x.nama} - Rp ${Number(x.harga).toLocaleString()}</option>`).join('');
+    d.innerHTML = `<label>Item Satuan</label><select id="layanan">${satuan}</select>`;
+  } else d.innerHTML='';
 });
 
-/* ---------- LocalStorage nama & WA ---------- */
-document.getElementById('nama').value = localStorage.getItem('laundry_nama') || '';
-document.getElementById('wa').value = localStorage.getItem('laundry_wa') || '';
+/* ---------- local save ---------- */
+document.getElementById('custName').value = localStorage.getItem('custName') || '';
+document.getElementById('custPhone').value = localStorage.getItem('custPhone') || '';
 
-/* ---------- Geolocation pin ---------- */
-let lokasiLink = '';
+/* ---------- geolocation ---------- */
 document.getElementById('pinBtn').addEventListener('click', ()=>{
-  const info = document.getElementById('lokasiInfo'); info.innerText = 'Mengambil lokasi...';
-  if(!navigator.geolocation){ info.innerText = 'Browser tidak mendukung geolokasi'; return; }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    lokasiLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    localStorage.setItem('laundry_lokasi', lokasiLink);
-    info.innerText = '✅ Lokasi berhasil diambil';
+  if(!navigator.geolocation) return alert('Perangkat tidak mendukung lokasi.');
+  navigator.geolocation.getCurrentPosition(p=>{
+    lokasiLink = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+    alert('Lokasi berhasil diambil');
     document.getElementById('alamat').required = false;
-  }, err=>{ info.innerText = '❌ Gagal mengambil lokasi'; });
+  }, err=> alert('Gagal mengambil lokasi: '+err.message));
 });
 
-/* ---------- Submit: build message, open WA, save to GitHub order file ---------- */
-document.getElementById('orderForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const nama = document.getElementById('nama').value.trim();
-  const wa = document.getElementById('wa').value.trim();
-  const jenis = document.getElementById('jenis').value;
-  const layanan = (jenis==='Kiloan') ? document.getElementById('kiloanPick').value : (()=>{ const sel = document.getElementById('satuanList'); const arr=[]; sel.querySelectorAll('div').forEach(div=>{ const chk = div.querySelector('input[type=checkbox]'); const qty = div.querySelector('input[type=number]'); if(chk && chk.checked && Number(qty.value)>0) arr.push({nama:chk.dataset.name, harga:Number(chk.dataset.price), qty: Number(qty.value)}); }); return arr.length? JSON.stringify(arr):'-'; })();
-  const estimasi = document.getElementById('estimasi').value;
-  const delivery = document.getElementById('delivery').value;
-  const waktu = document.getElementById('waktu').value;
-  const alamat = document.getElementById('alamat').value.trim() || '-';
-  const catatan = document.getElementById('catatan').value.trim() || '-';
-  const lokasi = lokasiLink || localStorage.getItem('laundry_lokasi') || '-';
+/* ---------- triple tap admin login on title ---------- */
+let taps=0; const title = document.getElementById('storeName');
+title.addEventListener('click', ()=>{
+  taps++; setTimeout(()=>taps=0,800); if(taps>=3) showAdminLogin();
+});
 
-  if(!alamat && lokasi==='-') { alert('Mohon isi alamat atau pin lokasi'); return; }
+/* ---------- admin login modal (simple prompt) ---------- */
+function showAdminLogin(){
+  const u = prompt('Username admin:'); const p = prompt('Password:');
+  if(u==='Zlink' && p==='1234'){ window.open('admin.html','_blank'); } else alert('Login gagal');
+}
 
-  // Save nama & wa locally
-  localStorage.setItem('laundry_nama', nama);
-  localStorage.setItem('laundry_wa', wa);
+/* ---------- Save order to GitHub (daily file) ---------- */
+async function saveOrderToGitHub(order){
+  // requires admin PAT entry (will be prompted once and stored in sessionStorage)
+  let pat = sessionStorage.getItem('gh_pat');
+  if(!pat) pat = prompt('Masukkan GitHub PAT (diperlukan untuk menyimpan pesanan):') || '';
+  if(!pat) return alert('Tidak ada PAT, pesanan tidak disimpan di repo.');
 
-  // Message
-  const now = new Date();
-  const hari = now.toLocaleDateString('id-ID',{weekday:'long'});
-  const tanggal = now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
-  const jam = now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  let pesan = `🧺 *PESAN LAUNDRY* 🧺%0A*${CONFIG.nama_toko || 'Laundry'}*%0A%0A`;
-  pesan += `📅 _${hari}, ${tanggal} pukul ${jam}_%0A%0A`;
-  pesan += `👤 Nama: ${nama}%0A📱 No. WA: ${wa}%0A🧥 Jenis: ${jenis}%0A🧼 Layanan: ${layanan}%0A`;
-  pesan += `⏳ Estimasi: ${estimasi}%0A🚚 Delivery: ${delivery}%0A🕓 Waktu: ${waktu}%0A`;
-  pesan += `🏠 Alamat: ${alamat}%0A📍 Lokasi: ${lokasi}%0A%0A`;
-  pesan += `_Terima kasih sudah memesan di ${CONFIG.nama_toko || 'Laundry'}_`;
+  // build path
+  const date = new Date().toISOString().split('T')[0];
+  const path = `order/${date}.json`;
+  const apiUrl = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
 
-  // open WA to admin if admin_wa set
-  if(CONFIG.admin_wa) window.open(`https://wa.me/${CONFIG.admin_wa}?text=${pesan}`, '_blank');
-
-  // Prepare order data and save to GitHub
-  const order = {
-    waktu_iso: now.toISOString(),
-    waktu_display: `${hari}, ${tanggal} pukul ${jam}`,
-    nama, wa, jenis, layanan, estimasi, delivery, waktu, alamat, lokasi, catatan
-  };
-
-  try{
-    const repo = CONFIG.github_repo || 'Zlinkhub/orderhere';
-    const pat = CONFIG.pat || ''; // PAT is optional; if empty attempt unauthenticated (likely fails for write)
-    const dateFile = now.toISOString().split('T')[0];
-    const url = `https://api.github.com/repos/${repo}/contents/order/${dateFile}.json`;
-
-    // get existing
-    let sha = null; let existing = null;
-    const check = await fetch(url, { headers: pat? { Authorization: `token ${pat}` } : {} });
-    if(check.ok){
-      const j = await check.json(); sha = j.sha; existing = JSON.parse(b64Decode(j.content));
-    }
-    const arr = Array.isArray(existing) ? existing : [];
-    arr.push(order);
-
-    const body = { message: `Tambah pesanan baru (${nama})`, content: b64Encode(JSON.stringify(arr, null, 2)) };
-    if(sha) body.sha = sha;
-
-    const put = await fetch(url, { method:'PUT', headers:{ 'Content-Type':'application/json', ...(pat?{ Authorization:`token ${pat}` }:{} ) }, body: JSON.stringify(body) });
-    if(!put.ok){ const err = await put.json(); console.warn('Gagal simpan order:', err); alert('Pesanan terkirim, tapi gagal menyimpan ke repo (cek PAT/Repo).'); }
-    else alert('✅ Pesanan terkirim dan (semoga) tersimpan. Terima kasih!');
-    document.getElementById('orderForm').reset();
-    lokasiLink = ''; document.getElementById('lokasiInfo').innerText = 'Belum ada lokasi';
-  }catch(err){
-    console.error(err); alert('Kesalahan saat menyimpan pesanan (cek console).');
+  // check existing
+  let existingResp = await fetch(apiUrl);
+  let sha = null; let arr = [];
+  if(existingResp.ok){
+    const js = await existingResp.json();
+    sha = js.sha;
+    try{ arr = JSON.parse(atob(js.content)); }catch(e){ arr = []; }
   }
+
+  // add id & timestamps & status
+  order.id = `ord-${Date.now()}`;
+  order.created_at = new Date().toISOString();
+  order.status = "Order Masuk";
+  order.payment = { status: "Belum Bayar", method: "", proof: "" };
+
+  arr.push(order);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(arr, null, 2))));
+  const body = { message: `Tambah order ${order.id}`, content };
+  if(sha) body.sha = sha;
+
+  const put = await fetch(apiUrl, {
+    method:'PUT',
+    headers:{ Authorization:`token ${pat}`, 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!put.ok){ const err = await put.json(); console.error('saveOrder failed',err); alert('Pesanan terkirim tapi gagal tersimpan ke repo. Periksa PAT & izin repo.'); return; }
+  sessionStorage.setItem('gh_pat', pat);
+  alert('Pesanan berhasil dikirim dan disimpan.');
+}
+
+/* ---------- send to admin button ---------- */
+document.getElementById('sendAdminBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if(!name||!phone) return alert('Nama dan WA wajib');
+  const jenis = document.getElementById('jenis').value;
+  const layanan = document.getElementById('layanan')?.value || '-';
+  const estimasi = document.getElementById('estimasi').value;
+  const delivery = document.getElsementById('delivery').value;
+  const waktu = document.getElementById('waktu').value || '-';
+  const alamat = document.getElementById('alamat').value || '-';
+  const order = { name, phone, jenis, layanan, estimasi, delivery, waktu, alamat, lokasi: lokasiLink || '-' };
+
+  // save locally for next use
+  localStorage.setItem('custName', name); localStorage.setItem('custPhone', phone);
+
+  // 1) save order to GitHub
+  await saveOrderToGitHub(order);
+
+  // 2) send WA to admin
+  const adminNo = CONFIG.adminPhone || CONFIG.adminPhone || '';
+  if(adminNo){
+    const now = new Date(); const dateStr = now.toLocaleString('id-ID', { weekday:'long', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    let text = `🧺 *PESAN LAUNDRY* 🧺%0A*${CONFIG.storeName || 'Laundry'}*%0A%0A📅 _${dateStr}_%0A%0A👤 Nama: ${name}%0A📱 No. WA: ${phone}%0A🧥 Jenis: ${jenis}%0A🧼 Layanan: ${layanan}%0A⏳ Estimasi: ${estimasi}%0A🚚 Delivery: ${delivery}%0A🕓 Waktu: ${waktu}%0A🏠 Alamat: ${alamat}%0A📍 Lokasi: ${order.lokasi}%0A%0A_Terima kasih!_`;
+    window.open(`https://wa.me/${adminNo}?text=${text}`,'_blank');
+  } else alert('Pesanan dikirim, tapi nomor admin belum diatur di config.json');
 });
 
-/* ---------- Init ---------- */
-(async ()=>{ await loadConfig(); })();
+/* ---------- init ---------- */
+loadConfig();
 </script>
 </body>
 </html>

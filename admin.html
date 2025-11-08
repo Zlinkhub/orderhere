@@ -1,182 +1,279 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Azayaka Laundry</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background: #f7f8fc;
-    }
-    header {
-      background: linear-gradient(135deg, #4f46e5, #06b6d4);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    main {
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    label {
-      font-weight: 600;
-    }
-    .save-btn {
-      background: #4f46e5;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .preview {
-      text-align: center;
-      padding: 15px;
-      background: white;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .preview img {
-      max-height: 80px;
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Panel — Azayaka Laundry</title>
+<style>
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;margin:0;background:#f4f6fb}
+  header{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;padding:18px;text-align:center}
+  .wrap{max-width:1000px;margin:18px auto;padding:12px;display:grid;grid-template-columns:380px 1fr;gap:18px}
+  .card{background:#fff;padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,.06)}
+  label{display:block;margin-top:8px;font-weight:700}
+  input,textarea,select,button{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #e6e6e6}
+  .small{font-size:13px;color:#6b7280}
+  .price-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .price-row input[type=number]{width:120px}
+  .actions{display:flex;gap:8px;margin-top:12px}
+  .btn-primary{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:0;padding:10px;border-radius:8px;cursor:pointer}
+</style>
 </head>
 <body>
-  <header>
-    <h2>🧺 Admin Panel — Azayaka Laundry</h2>
-  </header>
+<header><h1>Admin Panel — Azayaka Laundry</h1></header>
 
-  <main>
-    <div class="preview">
-      <img id="previewLogo" src="" alt="Logo Laundry">
-      <h2 id="previewNama">Nama Laundry</h2>
-      <p id="previewBio" style="font-style:italic;">Bio Laundry...</p>
+<div class="wrap">
+  <div class="card">
+    <h3>Login & GitHub</h3>
+    <div class="small">Masukkan PAT GitHub (scope: repo) — disimpan di session untuk sesi ini.</div>
+    <label>GitHub PAT</label><input id="pat" placeholder="ghp_xxx...">
+    <label>Repo (owner/repo)</label><input id="repo" value="Zlinkhub/orderhere">
+    <div class="actions">
+      <button class="btn-primary" id="savePatBtn">Simpan PAT (session)</button>
+      <button id="logoutPatBtn">Logout PAT</button>
     </div>
 
-    <label>Nama Toko</label>
-    <input id="nama_toko" placeholder="Masukkan nama laundry">
+    <hr style="margin:12px 0">
 
-    <label>Logo (URL)</label>
-    <input id="logo" placeholder="Tempel URL logo">
+    <h3>Toko & Tema</h3>
+    <label>Nama Toko</label><input id="storeName">
+    <label>Bio singkat</label><textarea id="storeBio" rows="2"></textarea>
+    <label>Logo URL</label><input id="logoUrl"><input type="file" id="logoFile" accept="image/*">
+    <img id="logoPreview" style="width:84px;height:84px;border-radius:10px;margin-top:8px;background:#eee;display:block">
 
-    <label>Bio Laundry</label>
-    <textarea id="bio" rows="2" placeholder="Deskripsi singkat laundry..."></textarea>
+    <label>Warna 1</label><input id="color1" type="color">
+    <label>Warna 2</label><input id="color2" type="color">
+    <label>Background Image URL</label><input id="bgUrl"><input type="file" id="bgFile" accept="image/*">
+    <label>Overlay opacity (0-1)</label><input id="overlay" type="number" min="0" max="1" step="0.1">
 
-    <label>Nomor WhatsApp Admin</label>
-    <input id="admin_wa" placeholder="Contoh: 628xxxxxxxxxx">
+    <label>Nomor Admin (628...)</label><input id="adminPhone">
+    <label>Nomor Kurir (628...)</label><input id="courierPhone">
 
-    <label>Nomor WhatsApp Kurir</label>
-    <input id="kurir_wa" placeholder="Contoh: 628xxxxxxxxxx">
+    <h4>Links</h4>
+    <label>Pricelist / page</label><input id="linkPricelist">
+    <label>Social</label><input id="linkSocial">
 
-    <label>Warna Utama</label>
-    <input id="warna_utama" type="color" value="#4f46e5">
+    <div class="actions">
+      <button class="btn-primary" id="saveConfigBtn">💾 Simpan config ke GitHub</button>
+      <button id="loadConfigBtn">🔁 Load config</button>
+    </div>
 
-    <label>Warna Gradasi Kedua</label>
-    <input id="warna_gradasi" type="color" value="#06b6d4">
+    <hr style="margin:12px 0">
 
-    <label>URL Foto Latar</label>
-    <input id="bg_foto" placeholder="https://...">
+    <h3>Daftar Harga Satuan</h3>
+    <div id="pricesBox"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <input id="newItemName" placeholder="Nama item"><input id="newItemPrice" placeholder="Harga" type="number">
+    </div>
+    <button id="addPriceBtn">+ Tambah Item</button>
 
-    <label>Opacity Warna (0–1)</label>
-    <input id="opacity_overlay" type="number" step="0.1" min="0" max="1" value="0.5">
+  </div>
 
-    <label>Daftar Harga Laundry Satuan</label>
-    <textarea id="harga_satuan" rows="3" placeholder='Contoh: [{"nama":"Kemeja","harga":8000}]'></textarea>
+  <div class="card">
+    <h3>Preview & Operasi</h3>
+    <div style="display:flex;gap:12px">
+      <div style="flex:1">
+        <div id="preview" style="border-radius:10px;padding:12px;background:#fff;">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:84px;height:84px;border-radius:10px;overflow:hidden;background:#eee" id="pvLogoWrap"><img id="pvLogo" src="" style="width:100%;height:100%;object-fit:cover;display:none"></div>
+            <div>
+              <div id="pvName" style="font-weight:800">Azayaka Laundry</div>
+              <div id="pvBio" style="opacity:.8">Bio laundry</div>
+            </div>
+          </div>
+          <div style="margin-top:12px"><strong>Harga per kg:</strong> <span id="pvPriceKg"></span></div>
+        </div>
 
-    <label>Menu Informasi (misal sosmed atau link lain)</label>
-    <textarea id="menu_info" rows="3" placeholder='Contoh: {"Instagram":"https://instagram.com/azayaka"}'></textarea>
+        <div style="margin-top:12px">
+          <button class="btn-primary" id="openInvoice">Buka Panel Pesanan / Invoice</button>
+        </div>
+      </div>
 
-    <label>Personal Access Token (PAT GitHub)</label>
-    <input id="pat" placeholder="Masukkan PAT GitHub">
+      <div style="width:240px">
+        <h4>PAT Info</h4>
+        <div class="small">PAT saat ini: <span id="patStatus">--</span></div>
+        <h4 style="margin-top:12px">Repo</h4>
+        <div class="small" id="repoInfo"></div>
+      </div>
+    </div>
 
-    <button class="save-btn" onclick="saveConfig()">💾 Simpan ke GitHub</button>
-  </main>
+    <hr style="margin:12px 0">
+    <h3>History & Utilities</h3>
+    <div style="display:flex;gap:8px">
+      <input type="date" id="historyDate">
+      <button id="exportDay">Download JSON</button>
+      <button id="clearLocal">Clear Local (PAT/Session)</button>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const repoOwner = "Zlinkhub";
-    const repoName = "orderhere";
-    const configPath = "config.json";
+<script>
+/* ---------- Helper ---------- */
+const repoInput = document.getElementById('repo');
+const patInput = document.getElementById('pat');
+const ownerRepoDefault = 'Zlinkhub/orderhere';
 
-    async function loadConfig() {
-      const res = await fetch("config.json");
-      const data = await res.json();
-      for (const key in data) {
-        if (document.getElementById(key)) {
-          const el = document.getElementById(key);
-          el.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
-        }
-      }
-      updatePreview();
-    }
+function getPat(){ return sessionStorage.getItem('gh_pat') || patInput.value.trim() || ''; }
+function setPat(p){ sessionStorage.setItem('gh_pat', p); patInput.value = p; document.getElementById('patStatus').innerText = p? 'SET':'--'; }
+function getRepo(){ return repoInput.value.trim() || ownerRepoDefault; }
 
-    function updatePreview() {
-      document.getElementById("previewLogo").src = document.getElementById("logo").value;
-      document.getElementById("previewNama").innerText = document.getElementById("nama_toko").value || "Nama Laundry";
-      document.getElementById("previewBio").innerText = document.getElementById("bio").value || "Bio Laundry...";
-    }
+async function fetchJson(url, headers={}){ const r=await fetch(url,{headers}); if(!r.ok) throw r; return await r.json(); }
 
-    async function saveConfig() {
-      const pat = document.getElementById("pat").value.trim();
-      if (!pat) return alert("Masukkan Personal Access Token (PAT) terlebih dahulu!");
+/* ---------- Save PAT ---------- */
+document.getElementById('savePatBtn').addEventListener('click', ()=>{
+  const p = patInput.value.trim(); if(!p) return alert('Masukkan PAT');
+  setPat(p); alert('PAT disimpan di session untuk sesi ini');
+});
 
-      const config = {
-        nama_toko: document.getElementById("nama_toko").value,
-        logo: document.getElementById("logo").value,
-        bio: document.getElementById("bio").value,
-        admin_wa: document.getElementById("admin_wa").value,
-        kurir_wa: document.getElementById("kurir_wa").value,
-        warna_utama: document.getElementById("warna_utama").value,
-        warna_gradasi: document.getElementById("warna_gradasi").value,
-        bg_foto: document.getElementById("bg_foto").value,
-        opacity_overlay: parseFloat(document.getElementById("opacity_overlay").value),
-        harga_satuan: JSON.parse(document.getElementById("harga_satuan").value || "[]"),
-        menu_info: JSON.parse(document.getElementById("menu_info").value || "{}"),
-        pat: ""
-      };
+/* ---------- Logout PAT ---------- */
+document.getElementById('logoutPatBtn').addEventListener('click', ()=>{
+  sessionStorage.removeItem('gh_pat'); patInput.value=''; document.getElementById('patStatus').innerText='--'; alert('PAT dihapus dari session');
+});
 
-      const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
-      const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${configPath}`;
+/* ---------- Load config.json ---------- */
+async function loadConfigToAdmin(){
+  try{
+    const res = await fetch('config.json'); const cfg = await res.json();
+    document.getElementById('storeName').value = cfg.storeName || '';
+    document.getElementById('storeBio').value = cfg.bio || '';
+    document.getElementById('logoUrl').value = cfg.logo || '';
+    if(cfg.logo){ document.getElementById('logoPreview').src = cfg.logo; document.getElementById('logoPreview').style.display='block'; }
+    document.getElementById('color1').value = cfg.theme?.color1 || '#4CAF50';
+    document.getElementById('color2').value = cfg.theme?.color2 || '#81C784';
+    document.getElementById('bgUrl').value = cfg.theme?.backgroundImage || '';
+    document.getElementById('overlay').value = parseFloat((cfg.theme?.overlay || 'rgba(255,255,255,0.7)').match(/0\.\d+/)?.[0]) || 0.7;
+    document.getElementById('adminPhone').value = cfg.adminPhone || '';
+    document.getElementById('courierPhone').value = cfg.courierPhone || '';
+    document.getElementById('linkPricelist').value = cfg.links?.pricelist || '';
+    document.getElementById('linkSocial').value = cfg.links?.social || '';
+    // pricing
+    const prices = cfg.pricing?.satuan || [];
+    document.getElementById('pricesBox').innerHTML = '';
+    prices.forEach(it=> addPriceRow(it.nama,it.harga));
+    document.getElementById('pvPriceKg').innerText = `Rp ${Number(cfg.pricing?.perKg||0).toLocaleString()}/kg`;
+    // preview
+    document.getElementById('pvName').innerText = cfg.storeName || 'Azayaka Laundry';
+    document.getElementById('pvBio').innerText = cfg.bio || '';
+    if(cfg.logo){ document.getElementById('pvLogo').src = cfg.logo; document.getElementById('pvLogo').style.display='block'; }
+    document.getElementById('repoInfo').innerText = getRepo();
+  }catch(e){ console.warn('load config failed',e); alert('Gagal load config.json (cek file di repo)'); }
+}
+document.getElementById('loadConfigBtn').addEventListener('click', loadConfigToAdmin);
 
-      const getFile = await fetch(url);
-      const fileData = await getFile.json();
-      const sha = fileData.sha;
+/* ---------- Price rows ---------- */
+function addPriceRow(name='',price=''){
+  const div=document.createElement('div'); div.className='price-row';
+  div.innerHTML = `<input placeholder="Nama item" value="${name}"><input type="number" placeholder="Harga" value="${price}"><button onclick="this.parentElement.remove()">Hapus</button>`;
+  document.getElementById('pricesBox').appendChild(div);
+}
+document.getElementById('addPriceBtn').addEventListener('click', ()=>addPriceRow(document.getElementById('newItemName').value,document.getElementById('newItemPrice').value));
 
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Authorization": `token ${pat}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: "Update config.json via Admin Panel",
-          content: base64,
-          sha
-        })
-      });
+/* ---------- Upload assets (logo/bg) to repo */ 
+async function uploadFileToRepo(file, destPath){
+  const pat = getPat(); const repo = getRepo();
+  if(!pat) return null;
+  const arr = await file.arrayBuffer(); const b64 = btoa(String.fromCharCode(...new Uint8Array(arr)));
+  const url = `https://api.github.com/repos/${repo}/contents/${destPath}`;
+  // check existing -> get sha
+  const check = await fetch(url,{headers:{Authorization:`token ${pat}`}});
+  let sha=null; if(check.ok){ const j=await check.json(); sha=j.sha; }
+  const body = { message:`upload ${destPath}`, content: b64 }; if(sha) body.sha=sha;
+  const put = await fetch(url,{method:'PUT',headers:{Authorization:`token ${pat}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!put.ok){ console.error(await put.json()); return null; }
+  // raw URL
+  const repoSplit = repo.split('/'); return `https://raw.githubusercontent.com/${repoSplit[0]}/${repoSplit[1]}/main/${destPath}`;
+}
 
-      if (res.ok) alert("✅ Konfigurasi berhasil disimpan ke GitHub!");
-      else alert("❌ Gagal menyimpan! Periksa PAT dan izin repositori.");
-    }
+/* ---------- logo file change preview */ 
+document.getElementById('logoFile').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  document.getElementById('logoPreview').src = URL.createObjectURL(f);
+  // upload if wanted only on save config step
+});
 
-    document.querySelectorAll("input, textarea").forEach(el => {
-      el.addEventListener("input", updatePreview);
-    });
+/* ---------- bg file */ 
+document.getElementById('bgFile').addEventListener('change', (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  // preview only stored; upload on save
+});
 
-    loadConfig();
-  </script>
+/* ---------- Save config to GitHub ---------- */
+document.getElementById('saveConfigBtn').addEventListener('click', async ()=>{
+  const pat = getPat(); const repo = getRepo();
+  if(!pat) return alert('Masukkan PAT GitHub terlebih dahulu');
+  // gather config
+  const cfg = {
+    storeName: document.getElementById('storeName').value,
+    bio: document.getElementById('storeBio').value,
+    logo: document.getElementById('logoUrl').value,
+    adminPhone: document.getElementById('adminPhone').value,
+    courierPhone: document.getElementById('courierPhone').value,
+    theme: {
+      color1: document.getElementById('color1').value,
+      color2: document.getElementById('color2').value,
+      backgroundImage: document.getElementById('bgUrl').value,
+      overlay: `rgba(255,255,255,${document.getElementById('overlay').value || 0.7})`
+    },
+    pricing: {
+      perKg: Number(document.getElementById('pvPriceKg').innerText.replace(/[^0-9]/g,'')) || 0,
+      satuan: Array.from(document.querySelectorAll('.price-row')).map(r=>({ nama:r.children[0].value, harga: Number(r.children[1].value)||0 }))
+    },
+    links: {
+      pricelist: document.getElementById('linkPricelist').value,
+      social: document.getElementById('linkSocial').value
+    },
+    notifications: { autoNotifyStatusChange: false }
+  };
+
+  // if user selected files for logo/bg, upload them first
+  if(document.getElementById('logoFile').files[0]){
+    const url = await uploadFileToRepo(document.getElementById('logoFile').files[0], `assets/logo-${Date.now()}.png`);
+    if(url) { cfg.logo = url; document.getElementById('logoUrl').value = url; }
+  }
+  if(document.getElementById('bgFile').files[0]){
+    const url2 = await uploadFileToRepo(document.getElementById('bgFile').files[0], `assets/bg-${Date.now()}.jpg`);
+    if(url2){ cfg.theme.backgroundImage = url2; document.getElementById('bgUrl').value = url2; }
+  }
+
+  // write config.json to repo
+  const path = 'config.json'; const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+  // get existing sha
+  const get = await fetch(url,{headers:{Authorization:`token ${pat}`}});
+  let sha = null;
+  if(get.ok){ const j=await get.json(); sha = j.sha; }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2))));
+  const body = { message: 'Update config.json via admin panel', content }; if(sha) body.sha = sha;
+  const put = await fetch(url,{method:'PUT',headers:{Authorization:`token ${pat}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const jr = await put.json();
+  if(put.ok){ alert('✅ config.json berhasil disimpan ke repo'); loadConfigToAdmin(); }
+  else{ console.error(jr); alert('❌ Gagal menyimpan config (cek console)'); }
+});
+
+/* ---------- Open invoice panel ---------- */
+document.getElementById('openInvoice').addEventListener('click', ()=>{
+  window.open('invoice.html','_blank');
+});
+
+/* ---------- Utilities: export day & clear session ---------- */
+document.getElementById('exportDay').addEventListener('click', async ()=>{
+  const d = document.getElementById('historyDate').value;
+  if(!d) return alert('Pilih tanggal');
+  // attempt fetch order/d.json
+  try{
+    const repo = getRepo(); const pat = getPat(); const path = `order/${d}.json`;
+    const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+    const res = await fetch(url,{headers:pat?{Authorization:`token ${pat}`}:{}});
+    if(!res.ok) return alert('Tidak ada file order untuk tanggal tersebut di repo.');
+    const j = await res.json(); const arr = JSON.parse(atob(j.content));
+    const blob = new Blob([JSON.stringify(arr,null,2)],{type:'application/json'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${d}.json`; link.click();
+  }catch(e){ console.error(e); alert('Gagal export'); }
+});
+
+document.getElementById('clearLocal').addEventListener('click', ()=>{
+  sessionStorage.removeItem('gh_pat'); localStorage.clear(); alert('Local cleared');
+});
+
+/* ---------- init ---------- */
+loadConfigToAdmin();
+</script>
 </body>
 </html>

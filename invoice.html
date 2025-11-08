@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Invoice / Orders — Admin</title>
+<style>
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;margin:0;background:#f3f6fc}
+  header{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;padding:14px;text-align:center}
+  .wrap{max-width:1100px;margin:18px auto;padding:12px}
+  .card{background:#fff;padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,.06);margin-bottom:12px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{border:1px solid #eef2ff;padding:8px;text-align:left}
+  select,input[type=number],input[type=text]{width:100%;padding:6px}
+  button{padding:8px 10px;border-radius:8px;border:0;background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;cursor:pointer}
+  .btn-ghost{background:#f3f4f6;color:#111}
+  .status-new{background:#fde68a;padding:6px;border-radius:6px}
+  .status-done{background:#bbf7d0;padding:6px;border-radius:6px}
+</style>
+</head>
+<body>
+<header><h2>Panel Orders & Invoice</h2></header>
+<div class="wrap">
+  <div class="card">
+    <div class="controls">
+      <label>Tanggal order: <input type="date" id="orderDate"></label>
+      <label>Filter status:
+        <select id="filterStatus"><option value="">(Semua)</option><option>Order Masuk</option><option>Antrian</option><option>Proses</option><option>Pack</option><option>Ready</option><option>Selesai</option></select>
+      </label>
+      <label>Filter Estimasi:
+        <select id="filterEst"><option value="">(Semua)</option><option>Reguler (2-3 hari)</option><option>Express (1 hari)</option><option>Express Sameday (6 jam)</option></select>
+      </label>
+      <button id="loadBtn">Load Orders</button>
+      <button id="refreshBtn" class="btn-ghost">Refresh</button>
+    </div>
+  </div>
+
+  <div id="ordersArea" class="card"></div>
+
+  <div id="historyArea" class="card"></div>
+</div>
+
+<script>
+const ownerRepo = 'Zlinkhub/orderhere';
+let PAT = sessionStorage.getItem('gh_pat') || '';
+const getRepo = ()=> document.getElementById('repoInput')?.value || ownerRepo;
+
+/* ---------- UI helpers ---------- */
+function el(q){ return document.querySelector(q); }
+function fmtIDR(v){ return 'Rp ' + Number(v||0).toLocaleString(); }
+function nowISO(){ return new Date().toISOString(); }
+
+/* ---------- date default today ---------- */
+document.getElementById('orderDate').value = new Date().toISOString().slice(0,10);
+
+/* ---------- Load orders for date ---------- */
+document.getElementById('loadBtn').addEventListener('click', loadOrders);
+document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+
+async function loadOrders(){
+  const date = document.getElementById('orderDate').value;
+  if(!date) return alert('Pilih tanggal');
+  try{
+    const path = `order/${date}.json`;
+    const url = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
+    const headers = PAT? { Authorization:`token ${PAT}` } : {};
+    const res = await fetch(url,{headers});
+    if(!res.ok){ document.getElementById('ordersArea').innerHTML = '<div>Tidak ada order untuk tanggal ini.</div>'; return; }
+    const j = await res.json(); const arr = JSON.parse(atob(j.content));
+    renderOrders(arr, j.sha, date);
+  }catch(e){ console.error(e); alert('Gagal load orders (cek PAT & network)'); }
+}
+
+function renderOrders(arr, sha, date){
+  // apply filters
+  const statusFilter = document.getElementById('filterStatus').value;
+  const estFilter = document.getElementById('filterEst').value;
+  let filtered = arr.filter(o => (statusFilter? o.status===statusFilter : true) && (estFilter? o.estimasi===estFilter : true));
+  // build table
+  let html = `<h3>Orders (${filtered.length}) — ${date}</h3>
+    <table><thead><tr><th>ID</th><th>Waktu</th><th>Nama</th><th>WA</th><th>Layanan</th><th>Berat (kg)</th><th>Harga/kg</th><th>Total</th><th>Status</th><th>Payment</th><th>Aksi</th></tr></thead><tbody>`;
+  filtered.forEach((o, idx) => {
+    const id = o.id || `i${idx}`;
+    const berat = o.berat||'';
+    const pricekg = (o.pricekg!=null)?o.pricekg: (o.price_per_kg || 0);
+    const total = (Number(berat)||0) * (Number(pricekg)||0);
+    html += `<tr data-index="${idx}">
+      <td>${id}</td>
+      <td>${(new Date(o.created_at||'')).toLocaleString()}</td>
+      <td>${o.name}</td>
+      <td>${o.phone}</td>
+      <td>${o.jenis} / ${o.layanan}</td>
+      <td><input type="number" value="${berat||''}" data-field="berat" style="width:80px"></td>
+      <td><input type="number" value="${pricekg||''}" data-field="pricekg" style="width:110px"></td>
+      <td class="total">${fmtIDR(total)}</td>
+      <td>
+        <select data-field="status">
+          <option ${o.status==='Order Masuk'?'selected':''}>Order Masuk</option>
+          <option ${o.status==='Antrian'?'selected':''}>Antrian</option>
+          <option ${o.status==='Proses'?'selected':''}>Proses</option>
+          <option ${o.status==='Pack'?'selected':''}>Pack</option>
+          <option ${o.status==='Ready'?'selected':''}>Ready</option>
+          <option ${o.status==='Selesai'?'selected':''}>Selesai</option>
+        </select>
+      </td>
+      <td>
+        <div>${o.payment?.status||'Belum Bayar'}</div>
+        <div>${o.payment?.method||''}</div>
+        ${o.payment?.proof? `<a href="${o.payment.proof}" target="_blank">Lihat Bukti</a>` : `<input type="file" data-field="proof">`}
+      </td>
+      <td>
+        <button class="btn-save">💾 Simpan</button>
+        <button class="btn-invoice">🧾 Kirim Invoice</button>
+        <button class="btn-print">🖨️ Cetak</button>
+        <button class="btn-delete">🗑 Hapus</button>
+      </td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  document.getElementById('ordersArea').innerHTML = html;
+
+  // add events
+  document.querySelectorAll('#ordersArea tbody tr').forEach((tr,i)=>{
+    const idx = Number(tr.getAttribute('data-index'));
+    tr.querySelectorAll('[data-field]').forEach(inp=>{
+      inp.addEventListener('input', ()=>updateRowTotal(tr));
+    });
+    tr.querySelector('.btn-save').addEventListener('click', ()=>saveRow(idx));
+    tr.querySelector('.btn-invoice').addEventListener('click', ()=>sendInvoice(idx));
+    tr.querySelector('.btn-print').addEventListener('click', ()=>printInvoice(idx));
+    tr.querySelector('.btn-delete').addEventListener('click', ()=>deleteRow(idx));
+    // file input upload
+    const fileInput = tr.querySelector('input[type=file]');
+    if(fileInput) fileInput.addEventListener('change', (ev)=>uploadProof(ev, idx));
+  });
+
+  // keep arr and sha in dataset for later save
+  document.getElementById('ordersArea').dataset.orders = JSON.stringify(arr);
+  document.getElementById('ordersArea').dataset.sha = sha;
+  document.getElementById('ordersArea').dataset.date = date;
+}
+
+function updateRowTotal(tr){
+  const berat = Number(tr.querySelector('input[data-field=berat]').value) || 0;
+  const pricekg = Number(tr.querySelector('input[data-field=pricekg]').value) || 0;
+  tr.querySelector('.total').innerText = fmtIDR(berat*pricekg);
+}
+
+/* ---------- Upload proof image to repo then update order.payment.proof ---------- */
+async function uploadProof(ev, index){
+  const file = ev.target.files[0]; if(!file) return alert('File kosong');
+  const date = document.getElementById('orderDate').value;
+  const pat = sessionStorage.getItem('gh_pat') || prompt('Masukkan PAT untuk upload bukti:');
+  if(!pat) return alert('Perlu PAT untuk upload');
+  const repo = ownerRepo;
+  const folder = `payment/${date}`;
+  const filename = `proof-${Date.now()}-${file.name.replace(/\s/g,'_')}`;
+  const path = `${folder}/${filename}`;
+  // upload
+  const arr = await file.arrayBuffer(); const b64 = btoa(String.fromCharCode(...new Uint8Array(arr)));
+  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+  // check existing
+  const check = await fetch(url,{headers:{Authorization:`token ${pat}`}});
+  let sha=null; if(check.ok){ const j=await check.json(); sha=j.sha; }
+  const body = { message:`upload proof ${filename}`, content: b64 }; if(sha) body.sha=sha;
+  const put = await fetch(url,{method:'PUT',headers:{Authorization:`token ${pat}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!put.ok){ alert('Upload bukti gagal'); console.error(await put.json()); return; }
+  const rawUrl = `https://raw.githubusercontent.com/${repo.split('/')[0]}/${repo.split('/')[1]}/main/${path}`;
+  // set in orders array and save
+  const area = document.getElementById('ordersArea');
+  const orders = JSON.parse(area.dataset.orders);
+  orders[index].payment = orders[index].payment || {};
+  orders[index].payment.proof = rawUrl;
+  orders[index].payment.status = orders[index].payment.status || 'Belum Bayar';
+  // save updated orders file back to repo
+  await writeOrdersFile(orders, date);
+  alert('Bukti uploaded dan order updated.');
+  loadOrders();
+}
+
+/* ---------- Save row (update order fields) ---------- */
+async function saveRow(index){
+  const area = document.getElementById('ordersArea'); const orders = JSON.parse(area.dataset.orders); const date = area.dataset.date;
+  const tr = document.querySelector(`#ordersArea tbody tr[data-index="${index}"]`);
+  if(!tr) return;
+  const berat = Number(tr.querySelector('input[data-field=berat]').value) || 0;
+  const pricekg = Number(tr.querySelector('input[data-field=pricekg]').value) || 0;
+  const status = tr.querySelector('select[data-field=status]').value;
+  // update
+  orders[index].berat = berat;
+  orders[index].pricekg = pricekg;
+  orders[index].total = berat * pricekg;
+  orders[index].status = status;
+  orders[index].updated_at = nowISO();
+
+  // if status Selesai -> move to history
+  if(status === 'Selesai'){
+    await moveToHistory(orders[index], date);
+    // remove from orders array
+    orders.splice(index,1);
+  }
+  // write back
+  await writeOrdersFile(orders,date);
+  alert('Order updated.');
+  loadOrders();
+}
+
+/* ---------- Write orders file to repo (PUT to contents) ---------- */
+async function writeOrdersFile(orders, date){
+  const pat = sessionStorage.getItem('gh_pat') || prompt('Masukkan PAT untuk menyimpan perubahan:');
+  if(!pat) return alert('Perlu PAT');
+  const path = `order/${date}.json`; const url = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
+  // get current sha
+  const get = await fetch(url,{headers:{Authorization:`token ${pat}`}});
+  let sha = null;
+  if(get.ok){ const j = await get.json(); sha = j.sha; }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(orders,null,2))));
+  const body = { message:`Update orders ${date}`, content }; if(sha) body.sha = sha;
+  const put = await fetch(url,{method:'PUT',headers:{Authorization:`token ${pat}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!put.ok){ const jr=await put.json(); console.error('writeOrdersFile',jr); alert('Gagal menulis file orders'); }
+}
+
+/* ---------- Move finished order to history (month file) ---------- */
+async function moveToHistory(order, date){
+  const pat = sessionStorage.getItem('gh_pat') || prompt('Masukkan PAT untuk memindahkan ke history:');
+  if(!pat) return alert('Perlu PAT');
+  const month = date.slice(0,7); // YYYY-MM
+  const path = `history/${month}.json`; const url = `https://api.github.com/repos/${ownerRepo}/contents/${path}`;
+  // get existing
+  const get = await fetch(url,{headers:{Authorization:`token ${pat}`}});
+  let arr = [], sha=null;
+  if(get.ok){ const j=await get.json(); sha=j.sha; try{ arr = JSON.parse(atob(j.content)); }catch(e){ arr=[]; } }
+  // add order with finished_at time
+  order.finished_at = new Date().toISOString();
+  arr.push(order);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(arr,null,2))));
+  const body = { message:`Add history ${order.id}`, content }; if(sha) body.sha = sha;
+  const put = await fetch(url,{method:'PUT',headers:{Authorization:`token ${pat}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!put.ok){ console.error(await put.json()); alert('Gagal simpan ke history'); }
+}
+
+/* ---------- Delete order (remove from day's file) ---------- */
+async function deleteRow(index){
+  if(!confirm('Hapus order ini?')) return;
+  const area = document.getElementById('ordersArea'); const orders = JSON.parse(area.dataset.orders); const date = area.dataset.date;
+  orders.splice(index,1);
+  await writeOrdersFile(orders,date);
+  alert('Order dihapus');
+  loadOrders();
+}
+
+/* ---------- Send Invoice to customer via WA (build message) ---------- */
+async function sendInvoice(index){
+  const area = document.getElementById('ordersArea'); const orders = JSON.parse(area.dataset.orders); const o = orders[index];
+  // ensure berat/price set
+  const berat = Number(o.berat)||0; const pricekg = Number(o.pricekg)||0; const total = berat*pricekg;
+  const cfg = await fetch('config.json').then(r=>r.json()).catch(()=>({storeName:'Laundry'}));
+  const msg = `🧾 *INVOICE LAUNDRY* 🧾%0A*${cfg.storeName || 'Laundry'}*%0A%0A👤 ${o.name}%0A📱 ${o.phone}%0A🧺 ${o.jenis} / ${o.layanan}%0A⚖️ Berat: ${berat} kg%0A💰 Harga/kg: ${fmtIDR(pricekg)}%0A💵 Total: ${fmtIDR(total)}%0A⏳ Estimasi: ${o.estimasi}%0A%0A_Status: ${o.status}%0A%0A_Terima kasih_`;
+  const url = `https://wa.me/${o.phone}?text=${msg}`;
+  window.open(url,'_blank');
+}
+
+/* ---------- Print invoice (open printable HTML) ---------- */
+async function printInvoice(index){
+  const area = document.getElementById('ordersArea'); const orders = JSON.parse(area.dataset.orders); const o = orders[index];
+  const cfg = await fetch('config.json').then(r=>r.json()).catch(()=>({storeName:'Laundry'}));
+  const berat = Number(o.berat)||0; const pricekg = Number(o.pricekg)||0; const total = berat*pricekg;
+  const html = `<html><head><title>Invoice ${o.id}</title>
+    <style>body{font-family:Arial;padding:20px} .h{display:flex;gap:12px;align-items:center} .logo{width:80px;height:80px;border-radius:8px;overflow:hidden}</style></head><body>
+    <div class="h"><div class="logo"><img src="${cfg.logo||''}" style="width:100%"></div><div><h2>${cfg.storeName||'Laundry'}</h2><div>${cfg.bio||''}</div></div></div>
+    <hr>
+    <h3>Invoice: ${o.id}</h3>
+    <div>Nama: ${o.name}</div><div>WA: ${o.phone}</div><div>Jenis: ${o.jenis} / ${o.layanan}</div>
+    <div>Berat: ${berat} kg</div><div>Harga/kg: ${fmtIDR(pricekg)}</div><div><strong>Total: ${fmtIDR(total)}</strong></div>
+    <div>Status: ${o.status}</div><div>Catatan: ${o.note || '-'}</div>
+    <hr><div>Terima kasih</div>
+    <script>window.print()</script>
+    </body></html>`;
+  const w = window.open('','_blank'); w.document.write(html); w.document.close();
+}
+
+/* ---------- init PAT prompt if not set ---------- */
+if(!PAT){ const p = sessionStorage.getItem('gh_pat'); if(p) PAT = p; }
+
+/* ---------- auto load ---------- */
+loadOrders();
+</script>
+</body>
+</html>

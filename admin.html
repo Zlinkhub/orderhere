@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Azayaka Laundry</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f9f9f9; margin:0; padding:20px; }
+h1 { text-align:center; }
+table { width:100%; border-collapse: collapse; margin-top:20px; }
+th, td { border:1px solid #ccc; padding:10px; text-align:left; }
+th { background:#4CAF50; color:#fff; }
+select { padding:5px; }
+button { padding:5px 10px; margin:2px; border:none; border-radius:5px; cursor:pointer; }
+.save { background:#2196F3; color:#fff; }
+.delete { background:#f44336; color:#fff; }
+</style>
+</head>
+<body>
+<h1>Admin Panel Azayaka Laundry</h1>
+
+<table id="ordersTable">
+<thead>
+<tr>
+<th>No</th>
+<th>Nama</th>
+<th>WA</th>
+<th>Layanan</th>
+<th>Catatan</th>
+<th>Status</th>
+<th>Tanggal</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button class="save" onclick="saveToGitHub()">Simpan ke GitHub</button>
+
+<script>
+// --- Konfigurasi GitHub ---
+const GITHUB_USER = "Zlinkhub"; // ganti dengan username repo
+const REPO = "orderhere";       // nama repo
+const FILE_PATH = "orders.json"; // file JSON di repo
+const BRANCH = "main";           // branch
+const TOKEN = "PASTE_TOKEN_DI_SINI"; // GitHub Personal Access Token
+
+// --- Load data dari localStorage ---
+function loadOrders(){
+  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  const tbody = document.querySelector("#ordersTable tbody");
+  tbody.innerHTML = "";
+  orders.forEach((o,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${o.name}</td>
+      <td>${o.wa}</td>
+      <td>${o.service}</td>
+      <td>${o.note}</td>
+      <td>
+        <select onchange="updateStatus(${i}, this.value)">
+          <option ${o.status==="Order Baru"?"selected":""}>Order Baru</option>
+          <option ${o.status==="Antrian"?"selected":""}>Antrian</option>
+          <option ${o.status==="Proses"?"selected":""}>Proses</option>
+          <option ${o.status==="Siap Dipacking"?"selected":""}>Siap Dipacking</option>
+          <option ${o.status==="Siap Diambil"?"selected":""}>Siap Diambil</option>
+          <option ${o.status==="Selesai"?"selected":""}>Selesai</option>
+        </select>
+      </td>
+      <td>${o.date}</td>
+      <td>
+        <button class="delete" onclick="deleteOrder(${i})">Hapus</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// --- Update Status ---
+function updateStatus(index, status){
+  let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  orders[index].status = status;
+  localStorage.setItem("orders", JSON.stringify(orders));
+}
+
+// --- Hapus order ---
+function deleteOrder(index){
+  if(confirm("Yakin ingin menghapus order ini?")){
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    orders.splice(index,1);
+    localStorage.setItem("orders", JSON.stringify(orders));
+    loadOrders();
+  }
+}
+
+// --- Simpan ke GitHub ---
+async function saveToGitHub(){
+  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  const content = btoa(JSON.stringify(orders, null, 2)); // encode base64
+
+  try {
+    // 1️⃣ Ambil SHA file jika sudah ada
+    let sha;
+    const resGet = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`, {
+      headers: { Authorization: `token ${TOKEN}` }
+    });
+    if(resGet.ok){
+      const data = await resGet.json();
+      sha = data.sha;
+    }
+
+    // 2️⃣ Update atau buat file
+    const resPut = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", Authorization: `token ${TOKEN}` },
+      body: JSON.stringify({
+        message: "Update order laundry",
+        content: content,
+        branch: BRANCH,
+        sha: sha
+      })
+    });
+
+    if(resPut.ok){
+      alert("Berhasil disimpan ke GitHub!");
+    } else {
+      const err = await resPut.json();
+      alert("Gagal: " + err.message);
+    }
+
+  } catch(err){
+    alert("Error: " + err.message);
+  }
+}
+
+loadOrders();
+</script>
+</body>
+</html>

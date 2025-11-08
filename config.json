@@ -1,46 +1,12 @@
 {
-  "site": {
-    "nama": "Azayaka Laundry",
-    "deskripsi": "Form pemesanan Laundry — kirim via WhatsApp",
-    "logo": "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
-    "warnaTema": "#2196F3",
-    "tahun": "2025"
-  },
-  "kontak": {
-    "admin_nama": "Admin Azayaka",
-    "admin_wa": "6287853561541",
-    "kurir_wa": "6285246756360",
-    "alamat": "i01/38",
-    "email": "azayakalaundry@gmail.com"
-  },
-  "layanan": {
-    "Kiloan": [
-      "Cuci + Setrika",
-      "Cuci Kering Lipat",
-      "Setrika Saja"
-    ],
-    "Satuan": [
-      "Pakaian",
-      "Bedcover / Selimut / Sprei",
-      "Jaket / Jas / Karpet / lainnya"
-    ]
-  },
-  "pengiriman": [
-    "Pick Up",
-
-    "Drop Off"
-  ],
-  "estimasi": [
-    "Reguler (3 hari)",
-    "Express (1 hari)",
-    "Sameday"
-  ],
-  "admin": {
-    "username": "Zlink",
-    "password": "1234"
-  },
-  "whatsappTemplate": {
-    "admin": "🧺 *PESAN LAUNDRY BARU* 🧺%0A%0A👤 Nama: {nama}%0A📱 No. WA: {nohp}%0A📦 Layanan: {layanan}%0A🚚 Pengiriman: {delivery}%0A⏱️ Estimasi: {estimasi}%0A📍 Alamat: {alamat}%0A📝 Catatan: {note}%0A%0A_Terima kasih telah memesan di {namaLaundry}_",
-    "kurir": "🚚 *PENGANTARAN LAUNDRY* 🚚%0A%0A👤 Nama: {nama}%0AAlamat: {alamat}%0ACatatan: {note}%0A%0A_Kurir segera menuju lokasi!_"
-  }
+  "namaLaundry": "Azayaka Laundry",
+  "logo": "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
+  "warna": "#ff8c00",
+  "background": "linear-gradient(180deg, #000000, #ff8c00 80%)",
+  "layananKiloan": ["Cuci + Setrika", "Cuci Kering Lipat", "Setrika Saja"],
+  "layananSatuan": ["Dry Clean","Pakaian","Bedcover","Selimut","Sprei","Sprei Set","Karpet","Sepatu","Tas","Topi","Lainnya"],
+  "links": { "Pricelist": "", "Instagram": "", "Website": "" },
+  "whatsappAdmin": "6287853561541",
+  "whatsappKurir": "6285246756360",
+  "github": { "owner": "Zlinkhub", "repo": "orderhere", "branch": "main", "path": "config.json" }
 }

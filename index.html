@@ -5,13 +5,74 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Azayaka Laundry - Order</title>
 <link rel="stylesheet" href="style.css">
+<style>
+/* Popup Login Admin */
+.login-popup {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+.login-box {
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+  width:300px;
+  text-align:center;
+}
+.login-box input {
+  width:100%;
+  padding:8px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+.login-box button {
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+.login-box .login-btn {
+  background:#2196F3;
+  color:#fff;
+}
+.login-box .close-btn {
+  background:#e74c3c;
+  color:#fff;
+}
+.admin-btn {
+  position:absolute;
+  top:15px; right:15px;
+  background:#fff;
+  color:#2196F3;
+  border:1px solid #2196F3;
+  border-radius:5px;
+  padding:5px 10px;
+  cursor:pointer;
+  font-size:13px;
+}
+.admin-btn:hover {
+  background:#2196F3;
+  color:#fff;
+}
+</style>
 </head>
 <body>
 <div class="topbar">
   <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
-  <div style="flex:1">
+  <div style="flex:1; position:relative;">
     <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
     <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
+    <!-- Tombol admin di pojok kanan atas -->
+    <button class="admin-btn" onclick="showLogin()">Admin</button>
   </div>
 </div>
 
@@ -79,18 +140,46 @@
   <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
 </form>
 
-<footer>
-  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
-  <footer style="text-align:center; margin-top:50px; font-size:14px; color:#555;">
+<footer style="text-align:center; margin-top:50px; font-size:14px; color:#555;">
   &copy; 2025 Azayaka Laundry | 
-  <a href="admin.html" style="color:#2196F3; text-decoration:none;">Admin Login</a>
-  </footer>
+  <a href="#" onclick="showLogin()" style="color:#2196F3; text-decoration:none;">Admin Login</a>
 </footer>
 
-<script src="script.js"></script>
-</body>
-</html>
+<!-- POPUP LOGIN ADMIN -->
+<div class="login-popup" id="loginPopup">
+  <div class="login-box">
+    <h2>Login Admin</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button class="login-btn" onclick="login()">Login</button>
+    <button class="close-btn" onclick="closeLogin()">Tutup</button>
+    <p id="error" style="color:red; margin-top:5px;"></p>
+  </div>
+</div>
 
+<script src="script.js"></script>
+
+<script>
+const ADMIN_USER = "admin";  // ubah sesuai keinginan
+const ADMIN_PASS = "1234";   // ubah sesuai keinginan
+
+function showLogin(){
+  document.getElementById('loginPopup').style.display = "flex";
+}
+function closeLogin(){
+  document.getElementById('loginPopup').style.display = "none";
+  document.getElementById('error').textContent = "";
+}
+function login(){
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  const err = document.getElementById('error');
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    window.location.href = "panel-admin.html"; // halaman admin kamu
+  } else {
+    err.textContent = "Username atau password salah!";
+  }
+}
 </script>
 
 </body>

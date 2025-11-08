@@ -78,7 +78,7 @@ function loadOrders(){
 }
 
 // --- Update Status ---
-function updateStatus(index, status){
+function updateStatus(index, status){p
   let orders = JSON.parse(localStorage.getItem("orders") || "[]");
   orders[index].status = status;
   localStorage.setItem("orders", JSON.stringify(orders));
@@ -112,6 +112,32 @@ async function saveToGitHub(){
 
     // 2️⃣ Update atau buat file
     const resPut = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`, {
+      method: "PUT",
+      headers: { "Content-Type":"application/json", Authorization: `token ${TOKEN}` },
+      body: JSON.stringify({
+        message: "Update order laundry",
+        content: content,
+        branch: BRANCH,
+        sha: sha
+      })
+    });l
+
+    if(resPut.ok){
+      alert("Berhasil disimpan ke GitHub!");
+    } else {
+      const err = await resPut.json();
+      alert("Gagal: " + err.message);
+    }
+
+  } catch(err){
+    alert("Error: " + err.message);
+  }
+}
+
+loadOrders();
+</script>
+</body>
+</html>    const resPut = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/${FILE_PATH}`, {
       method: "PUT",
       headers: { "Content-Type":"application/json", Authorization: `token ${TOKEN}` },
       body: JSON.stringify({

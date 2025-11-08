@@ -1,37 +1,22 @@
 {
-  "namaLaundry": "Azayaka Laundry",
-  "logo": "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
-  "warna": "#ff8c00",
-  "background": "linear-gradient(180deg, #000000, #ff8c00 80%)",
-  "layananKiloan": [
-    "Cuci + Setrika",
-    "Cuci Kering Lipat",
-    "Setrika Saja"
+  "nama_toko": "Azayaka Laundry",
+  "logo": "",
+  "bio": "Cepat, bersih, dan wangi — siap antar jemput!",
+  "admin_wa": "",
+  "kurir_wa": "",
+  "warna_utama": "#4f46e5",
+  "warna_gradasi": "#06b6d4",
+  "bg_foto": "",
+  "opacity_overlay": 0.6,
+  "harga_satuan": [
+    { "nama": "Kemeja", "harga": 8000 },
+    { "nama": "Celana", "harga": 9000 },
+    { "nama": "Jaket", "harga": 12000 }
   ],
-  "layananSatuan": [
-    "Dry Clean",
-    "Pakaian",
-    "Bedcover",
-    "Selimut",
-    "Sprei",
-    "Sprei Set",
-    "Karpet",
-    "Sepatu",
-    "Tas",
-    "Topi",
-    "Lainnya"
-  ],
-  "links": {
-    "Pricelist": "",
-    "Instagram": "",
-    "Website": ""
+  "menu_info": {
+    "Tentang Kami": "Azayaka Laundry melayani cuci express dan reguler.",
+    "Harga": "Cuci kiloan mulai Rp7.000/kg"
   },
-  "whatsappAdmin": "6287853561541",
-  "whatsappKurir": "6285246756360",
-  "github": {
-    "owner": "Zlinkhub",
-    "repo": "orderhere",
-    "branch": "main",
-    "path": "config.json"
-  }
+  "pat": "",
+  "github_repo": "Zlinkhub/orderhere"
 }

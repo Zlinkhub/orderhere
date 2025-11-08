@@ -8,40 +8,7 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
-  }
-
-  h1 {
-    text-align: center;
-    color: #333;
-  }
-
-  /* Form Pemesanan */
-  form {
-    max-width: 500px;
-    margin: 20px auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-
-  form input, form select, form textarea, form button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-
-  form button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
+    padding: 0;
   }
 
   /* Tombol admin pojok kanan atas */
@@ -49,7 +16,7 @@
     position: fixed;
     top: 10px;
     right: 10px;
-    background-color: #28A745;
+    background-color: #007BFF;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -112,21 +79,8 @@
 </head>
 <body>
 
-<h1>Azayaka Laundry</h1>
-<p style="text-align:center;">Silakan isi form pemesanan di bawah</p>
-
-<!-- Form Pemesanan Laundry -->
-<form id="orderForm">
-  <input type="text" name="name" placeholder="Nama" required>
-  <input type="text" name="phone" placeholder="No. WA" required>
-  <select name="service" required>
-    <option value="">Pilih Layanan</option>
-    <option value="cuciKiloan">Cuci Kiloan</option>
-    <option value="cuciSatuan">Cuci Satuan</option>
-  </select>
-  <textarea name="notes" placeholder="Catatan tambahan (opsional)"></textarea>
-  <button type="submit">Kirim Order</button>
-</form>
+<h1>Selamat Datang di Azayaka Laundry</h1>
+<p>Silakan isi form pemesanan di bawah...</p>
 
 <!-- Tombol Admin -->
 <button id="adminBtn">Admin</button>
@@ -143,46 +97,40 @@
 </div>
 
 <script>
-  // Tombol Admin
   const adminBtn = document.getElementById('adminBtn');
   const adminModal = document.getElementById('adminModal');
   const closeModal = document.getElementById('closeModal');
 
+  // Tampilkan modal saat tombol admin diklik
   adminBtn.onclick = () => {
     adminModal.style.display = 'block';
   };
 
+  // Tutup modal
   closeModal.onclick = () => {
     adminModal.style.display = 'none';
   };
 
+  // Tutup modal saat klik di luar konten
   window.onclick = (event) => {
     if (event.target == adminModal) {
       adminModal.style.display = 'none';
     }
   };
 
-  // Fungsi login admin
+  // Fungsi login sederhana (ganti username & password sesuai admin)
   function loginAdmin() {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
     if(user === 'Zlink' && pass === '1234') {
       alert('Login berhasil!');
       adminModal.style.display = 'none';
-      // Redirect atau tampilkan panel admin
-      window.location.href = 'admin.html';
+      // Redirect ke halaman admin atau tampilkan panel admin di sini
+      window.location.href = 'admin.html'; // contoh redirect
     } else {
       alert('Username atau password salah!');
     }
   }
-
-  // Form order (contoh alert saja, bisa dihubungkan ke database/GitHub)
-  const orderForm = document.getElementById('orderForm');
-  orderForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    alert('Order berhasil dikirim!');
-    orderForm.reset();
-  });
 </script>
 
 </body>

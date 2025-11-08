@@ -81,31 +81,16 @@
 
 <footer>
   © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
+  <footer style="text-align:center; margin-top:50px; font-size:14px; color:#555;">
+  &copy; 2025 Azayaka Laundry | 
+  <a href="admin.html" style="color:#2196F3; text-decoration:none;">Admin Login</a>
+  </footer>
 </footer>
 
 <script src="script.js"></script>
 </body>
 </html>
-  // Tutup modal saat klik di luar konten
-  window.onclick = (event) => {
-    if (event.target == adminModal) {
-      adminModal.style.display = 'none';
-    }
-  };
 
-  // Fungsi login sederhana (ganti username & password sesuai admin)
-  function loginAdmin() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    if(user === 'Zlink' && pass === '1234') {
-      alert('Login berhasil!');
-      adminModal.style.display = 'none';
-      // Redirect ke halaman admin atau tampilkan panel admin di sini
-      window.location.href = 'admin.html'; // contoh redirect
-    } else {
-      alert('Username atau password salah!');
-    }
-  }
 </script>
 
 </body>

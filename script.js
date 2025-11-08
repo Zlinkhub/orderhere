@@ -59,6 +59,34 @@ function submitOrder(tujuan){
   const pesan=`🧺 *PESAN LAUNDRY* 🧺\n*${config.namaLaundry}*\n\n👤 Nama: ${nama}\n📱 No. WA: ${nohp}\n🧥 Jenis: ${jenisDipilih}\n🧼 Layanan: ${layananDipilih}\n⏳ Estimasi: ${estimasi}\n🚚 Delivery: ${deliveryDipilih}\n🕓 Waktu: ${waktu}\n🏠 Alamat: ${alamat}\n📍 Lokasi: ${lokasi}`;
   const target = tujuan==="admin"?config.whatsappAdmin:config.whatsappKurir;
   window.open(`https://wa.me/${target}?text=${encodeURIComponent(pesan)}`, "_blank");
+function submitOrder(tipe) {
+  const nama = document.getElementById("nama").value;
+  const layanan = document.getElementById("layananGroup").textContent || "Tidak dipilih";
+  const delivery = document.querySelector(".btn-group #deliveryGroup")?.textContent || "Tidak dipilih";
+  const estimasi = document.getElementById("estimasi").value;
+  const note = document.getElementById("note").value;
+
+  if (!nama || !layanan || !estimasi) {
+    alert("Harap isi semua kolom wajib (*)");
+    return;
+  }
+
+  const order = {
+    nama,
+    layanan,
+    delivery,
+    estimasi,
+    note,
+    status: "Baru",
+    waktu: new Date().toLocaleString()
+  };
+
+  // Simpan ke localStorage
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  orders.push(order);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  alert("✅ Order berhasil dikirim dan tersimpan di sistem admin!");
 }
 
 window.onload = ()=>{ loadConfig(); document.getElementById("year").textContent=(new Date()).getFullYear(); };

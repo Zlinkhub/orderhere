@@ -1,100 +1,189 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Azayaka Laundry</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f0f0f0; }
-    .container { max-width:600px; margin:50px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    h1 { text-align:center; color:#333; }
-    label { display:block; margin-top:10px; }
-    input, select, textarea { width:100%; padding:10px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
-    button { margin-top:15px; padding:10px 20px; border:none; border-radius:5px; background:#4CAF50; color:#fff; cursor:pointer; }
-    button:hover { background:#45a049; }
-    #adminBtn { position:fixed; top:20px; right:20px; background:#ff9800; font-size:14px; padding:8px 12px; }
-    /* Modal */
-    .modal { display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; overflow:auto; background-color: rgba(0,0,0,0.4);}
-    .modal-content { background-color:#fff; margin:15% auto; padding:20px; border-radius:10px; width:90%; max-width:400px; position:relative; }
-    .close { position:absolute; top:10px; right:15px; color:#aaa; font-size:28px; font-weight:bold; cursor:pointer; }
-    .close:hover { color:#000; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azayaka Laundry</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+
+  /* Form Pemesanan */
+  form {
+    max-width: 500px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  form input, form select, form textarea, form button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  form button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  /* Tombol admin pojok kanan atas */
+  #adminBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #28A745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 14px;
+  }
+
+  /* Modal Login Admin */
+  #adminModal {
+    display: none; 
+    position: fixed; 
+    z-index: 1001; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5);
+  }
+
+  #adminModalContent {
+    background-color: #fff;
+    margin: 15% auto; 
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  #adminModalContent input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  #adminModalContent button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #28A745;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  #closeModal {
+    float: right;
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
+  }
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Azayaka Laundry</h1>
-    <form id="orderForm">
-      <label>Nama:</label>
-      <input type="text" id="name" required>
-      <label>No. WA:</label>
-      <input type="text" id="wa" required>
-      <label>Layanan:</label>
-      <select id="service" required>
-        <option value="">-- Pilih Layanan --</option>
-        <option value="Cuci Kiloan">Cuci Kiloan</option>
-        <option value="Cuci Satuan">Cuci Satuan</option>
-        <option value="Setrika Saja">Setrika Saja</option>
-      </select>
-      <label>Catatan:</label>
-      <textarea id="note" rows="3"></textarea>
-      <button type="submit">Kirim Order</button>
-    </form>
+
+<h1>Azayaka Laundry</h1>
+<p style="text-align:center;">Silakan isi form pemesanan di bawah</p>
+
+<!-- Form Pemesanan Laundry -->
+<form id="orderForm">
+  <input type="text" name="name" placeholder="Nama" required>
+  <input type="text" name="phone" placeholder="No. WA" required>
+  <select name="service" required>
+    <option value="">Pilih Layanan</option>
+    <option value="cuciKiloan">Cuci Kiloan</option>
+    <option value="cuciSatuan">Cuci Satuan</option>
+  </select>
+  <textarea name="notes" placeholder="Catatan tambahan (opsional)"></textarea>
+  <button type="submit">Kirim Order</button>
+</form>
+
+<!-- Tombol Admin -->
+<button id="adminBtn">Admin</button>
+
+<!-- Modal Login Admin -->
+<div id="adminModal">
+  <div id="adminModalContent">
+    <span id="closeModal">&times;</span>
+    <h3>Login Admin</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="loginAdmin()">Login</button>
   </div>
+</div>
 
-  <button id="adminBtn">Admin</button>
+<script>
+  // Tombol Admin
+  const adminBtn = document.getElementById('adminBtn');
+  const adminModal = document.getElementById('adminModal');
+  const closeModal = document.getElementById('closeModal');
 
-  <!-- Modal Admin Login -->
-  <div id="adminModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Login Admin</h2>
-      <label>Username:</label>
-      <input type="text" id="adminUser">
-      <label>Password:</label>
-      <input type="password" id="adminPass">
-      <button id="loginBtn">Login</button>
-    </div>
-  </div>
+  adminBtn.onclick = () => {
+    adminModal.style.display = 'block';
+  };
 
-  <script>
-    // --- Admin Modal ---
-    const modal = document.getElementById("adminModal");
-    const btn = document.getElementById("adminBtn");
-    const span = document.getElementsByClassName("close")[0];
+  closeModal.onclick = () => {
+    adminModal.style.display = 'none';
+  };
 
-    btn.onclick = () => modal.style.display = "block";
-    span.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if(e.target==modal) modal.style.display="none"; }
-
-    // --- Login Admin ---
-    document.getElementById("loginBtn").onclick = () => {
-      const user = document.getElementById("adminUser").value;
-      const pass = document.getElementById("adminPass").value;
-      if(user === "Zlink" && pass === "1234"){
-        window.location.href = "admin.html";
-      } else {
-        alert("Username atau password salah!");
-      }
+  window.onclick = (event) => {
+    if (event.target == adminModal) {
+      adminModal.style.display = 'none';
     }
+  };
 
-    // --- Order Form ---
-    document.getElementById("orderForm").addEventListener("submit", function(e){
-      e.preventDefault();
-      const order = {
-        name: document.getElementById("name").value,
-        wa: document.getElementById("wa").value,
-        service: document.getElementById("service").value,
-        note: document.getElementById("note").value,
-        status: "Order Baru",
-        date: new Date().toLocaleString()
-      };
-      // Simpan ke localStorage sementara
-      let orders = JSON.parse(localStorage.getItem("orders") || "[]");
-      orders.push(order);
-      localStorage.setItem("orders", JSON.stringify(orders));
-      alert("Order berhasil dikirim!");
-      this.reset();
-    });
-  </script>
+  // Fungsi login admin
+  function loginAdmin() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if(user === 'Zlink' && pass === '1234') {
+      alert('Login berhasil!');
+      adminModal.style.display = 'none';
+      // Redirect atau tampilkan panel admin
+      window.location.href = 'admin.html';
+    } else {
+      alert('Username atau password salah!');
+    }
+  }
+
+  // Form order (contoh alert saja, bisa dihubungkan ke database/GitHub)
+  const orderForm = document.getElementById('orderForm');
+  orderForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    alert('Order berhasil dikirim!');
+    orderForm.reset();
+  });
+</script>
+
 </body>
 </html>

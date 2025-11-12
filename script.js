@@ -75,6 +75,8 @@ function ambilLokasi(){
 }
 
 /* Submit order */
+
+
 function submitOrder(tujuan){
   const nama = document.getElementById("nama").value.trim(); 
   if(!nama || !jenisDipilih || !layananDipilih || !deliveryDipilih){ 
@@ -86,9 +88,14 @@ function submitOrder(tujuan){
   const waktu = document.getElementById("waktu").value||"-";
   const alamat = document.getElementById("alamat").value.trim()||"-";
   const lokasi = lokasiTeks||"-";
+  const note = document.getElementById("note").value.trim()||"-";
+
+  // Simpan ke localStorage agar admin bisa melihat
+  simpanOrderLocal(nama, nohp, layananDipilih, note);
+
   const pesan=`🧺 *PESAN LAUNDRY* 🧺\n*${config.namaLaundry}*\n\n👤 Nama: ${nama}\n📱 No. WA: ${nohp}\n🧥 Jenis: ${jenisDipilih}\n🧼 Layanan: ${layananDipilih}\n⏳ Estimasi: ${estimasi}\n🚚 Delivery: ${deliveryDipilih}\n🕓 Waktu: ${waktu}\n🏠 Alamat: ${alamat}\n📍 Lokasi: ${lokasi}`;
   const target = tujuan==="admin"?config.whatsappAdmin:config.whatsappKurir;
-  window.open(`https://wa.me/${target}?text=${encodeURIComponent(pesan)}`, "_blank");
+ window.open(`https://wa.me/${target}?text=${encodeURIComponent(pesan)}`, "_blank");
 }
 
 window.onload = ()=>{ 

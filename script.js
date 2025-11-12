@@ -136,43 +136,39 @@ function submitOrder(tujuan){
   window.open(`https://wa.me/${target}?text=${encodeURIComponent(pesan)}`, "_blank");
 }
 
-/* ===============================
-   FITUR: KLIK CEPAT 5X → LOGIN ADMIN
-=============================== */
+// === Klik cepat 5x untuk buka login admin ===
 let clickCount = 0;
-let lastClickTime = 0;
+let clickTimer;
 
-document.getElementById('siteTitle').addEventListener('click', function(){
-  const now = Date.now();
-  if(now - lastClickTime > 1000) clickCount = 0;
+document.querySelector("h1").addEventListener("click", function () {
   clickCount++;
-  lastClickTime = now;
-  if(clickCount >= 5){
+  const title = this;
+
+  if (clickCount === 5) {
+    // Efek bergetar lembut
+    title.classList.add("vibrate");
+    setTimeout(() => title.classList.remove("vibrate"), 400);
+
+    // Tampilkan panel login admin
+    document.getElementById("adminPanel").style.display = "flex";
     clickCount = 0;
-    document.getElementById('adminPanel').style.display = 'flex';
   }
+
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => (clickCount = 0), 800);
 });
 
-/* ===============================
-   FITUR: LOGIN ADMIN
-=============================== */
-const loginBtn = document.getElementById('loginBtn');
-const msg = document.getElementById('loginMsg');
+// === Login admin ===
+document.getElementById("loginBtn").addEventListener("click", function () {
+  const user = document.getElementById("adminUser").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+  const msg = document.getElementById("loginMsg");
 
-loginBtn.addEventListener('click', function(){
-  const user = document.getElementById('adminUser').value.trim();
-  const pass = document.getElementById('adminPass').value.trim();
-
-  const ADMIN_USER = "Zlink";
-  const ADMIN_PASS = "1234";
-
-  if(user === ADMIN_USER && pass === ADMIN_PASS){
+  if (user === "Zlink" && pass === "1234") {
     msg.style.color = "green";
     msg.textContent = "Login berhasil!";
     setTimeout(() => {
-      document.getElementById('adminPanel').style.display = 'none';
-      alert("✅ Selamat datang Admin!");
-      // Tambahkan fitur panel admin disini
+      window.location.href = "admin.html"; // Arahkan ke halaman admin
     }, 800);
   } else {
     msg.style.color = "red";

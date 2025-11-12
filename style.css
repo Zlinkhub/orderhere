@@ -1,6 +1,6 @@
 :root {
   --accent: #2196F3;
-  --accent-2: #42A5F5;
+  --accent-2: #2196F3;
   --bg: #f8f9fb;
   --text: #333;
 }
@@ -11,10 +11,8 @@ body {
   color: var(--text);
   margin: 0;
   padding: 0;
-  transition: background 0.3s ease;
 }
 
-/* 🧺 Header / Topbar */
 .topbar {
   display: flex;
   align-items: center;
@@ -22,8 +20,6 @@ body {
   padding: 12px 16px;
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  animation: fadeIn 0.6s ease;
 }
 
 .topbar img {
@@ -32,18 +28,12 @@ body {
   border-radius: 50%;
   object-fit: cover;
   background: #fff;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
 }
 
 h1 {
   margin: 0;
   font-size: 1.4rem;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-
-h1:active {
-  transform: scale(0.96);
 }
 
 .sub {
@@ -52,15 +42,13 @@ h1:active {
   margin: 2px 0 0;
 }
 
-/* 🧾 Form utama */
 form {
   max-width: 450px;
   margin: 20px auto;
   background: #fff;
-  padding: 18px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-  animation: fadeUp 0.5s ease;
 }
 
 form div {
@@ -79,16 +67,15 @@ input, select {
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 input:focus, select:focus {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(33,150,243,0.2);
+  box-shadow: 0 0 0 2px rgba(33,150,243,0.2);
 }
 
-/* 🔘 Tombol grup */
 .btn-group {
   display: flex;
   flex-wrap: wrap;
@@ -102,23 +89,53 @@ input:focus, select:focus {
   background: #eee;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
   font-weight: 500;
-}
-
-.btn:hover {
-  background: var(--accent-2);
-  color: #fff;
-  transform: translateY(-2px);
 }
 
 .btn.active {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 3px 6px rgba(33,150,243,0.3);
 }
 
-/* 📍 Lokasi dan Nomor WA */
+.btn:hover {
+  background: var(--accent-2);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.admin-send {
+  background: #2196F3;
+}
+
+.kurir-send {
+  background: #4CAF50;
+}
+
+.admin-send:hover {
+  background: #0b7dda;
+}
+
+.kurir-send:hover {
+  background: #3a9e43;
+}
+
+/* Kolom lokasi */
 .loc-row {
   display: flex;
   gap: 6px;
@@ -137,22 +154,20 @@ input:focus, select:focus {
   padding: 0 12px;
   cursor: pointer;
   font-size: 1.1rem;
-  transition: all 0.2s;
-}
-
-.loc-btn:hover {
-  background: var(--accent-2);
-  transform: scale(1.05);
 }
 
 /* Nomor WA + tombol ❌ */
+#nohp {
+  padding-right: 40px;
+  position: relative;
+}
+
 .wa-wrapper {
   position: relative;
 }
 
 .wa-wrapper input {
   width: 100%;
-  padding-right: 40px;
 }
 
 .wa-wrapper span.remove-wa {
@@ -168,50 +183,25 @@ input:focus, select:focus {
 
 .wa-wrapper span.remove-wa:hover {
   color: red;
-  transform: translateY(-50%) scale(1.1);
 }
 
-/* 🚀 Tombol aksi */
-.actions {
-  display: flex;
-  gap: 10px;
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+  margin: 20px 0;
 }
 
-.actions button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.admin-send {
-  background: #2196F3;
-}
-
-.kurir-send {
-  background: #4CAF50;
-}
-
-.actions button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* ⚙️ Panel Admin */
+/* Admin Panel */
 #adminPanel {
   display: none;
   justify-content: center;
   align-items: center;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.5);
   z-index: 999;
-  animation: fadeIn 0.3s ease;
 }
 
 #adminPanel .box {
@@ -219,9 +209,8 @@ input:focus, select:focus {
   padding: 20px;
   border-radius: 12px;
   width: 300px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   text-align: center;
-  animation: popIn 0.35s ease;
 }
 
 #adminPanel input {
@@ -234,16 +223,7 @@ input:focus, select:focus {
   margin-top: 6px;
 }
 
-/* 🦶 Footer */
-footer {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #555;
-  margin: 20px 0;
-  animation: fadeIn 0.6s ease;
-}
-
-/* 📱 Responsif */
+/* Responsif */
 @media (max-width: 500px) {
   form {
     margin: 10px;
@@ -262,32 +242,4 @@ footer {
   .actions button {
     font-size: 0.9rem;
   }
-}
-
-/* ✨ Animasi */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.85); }
-  to { opacity: 1; transform: scale(1); }
-}
-/* 💫 Efek bergetar lembut untuk logo/judul */
-.vibrate {
-  animation: vibrate 0.35s ease;
-}
-
-@keyframes vibrate {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
 }

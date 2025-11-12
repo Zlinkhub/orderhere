@@ -84,6 +84,27 @@
   © <span id="year"></span> <span id="footerName">Created by fauzi.aff</span>
 </footer>
 
+
+<script>
+let clickCount = 0;
+let lastClickTime = 0;
+
+document.getElementById('siteTitle').addEventListener('click', function() {
+  const now = Date.now();
+  if (now - lastClickTime > 1000) clickCount = 0;
+  clickCount++;
+  lastClickTime = now;
+  if (clickCount >= 5) {
+    clickCount = 0;
+    document.getElementById("adminPanel").style.display = "block";
+  }
+});
+</script>
+<script src="script.js"></script>
+...
+<div id="adminPanel" style="display:none;">Panel Admin</div>
+<script> ...kode di atas...</script>
+
 <script src="script.js"></script>
 </body>
 </html>

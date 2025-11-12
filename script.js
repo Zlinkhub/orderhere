@@ -1,3 +1,37 @@
+
+// script.js
+
+let clickCount = 0;
+let lastClickTime = 0;
+
+document.getElementById('siteTitle').addEventListener('click', function() {
+  const now = Date.now();
+
+  // Jika klik lebih dari 1 detik dari sebelumnya, reset hitungan
+  if (now - lastClickTime > 1000) {
+    clickCount = 0;
+  }
+
+  clickCount++;
+  lastClickTime = now;
+
+  // Jika klik cepat 5x berturut-turut
+  if (clickCount >= 5) {
+    clickCount = 0; // reset setelah berhasil
+    openAdminPanel(); // fungsi untuk buka panel admin
+  }
+});
+
+// Fungsi membuka admin tersembunyi
+function openAdminPanel() {
+  alert("🔐 Mode Admin Aktif!");
+  document.body.classList.add("admin-active");
+
+  // Atau tampilkan elemen admin tersembunyi:
+  const adminPanel = document.getElementById("adminPanel");
+  if (adminPanel) adminPanel.style.display = "block";
+}
+
 let config = {};
 let jenisDipilih="", layananDipilih="", deliveryDipilih="";
 let lokasiTeks = "";

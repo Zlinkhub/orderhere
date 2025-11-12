@@ -1,58 +1,3 @@
-// -----------------------------
-// Fitur: Klik cepat 5x untuk buka login admin
-// -----------------------------
-let clickCount = 0;
-let lastClickTime = 0;
-
-document.getElementById('siteTitle').addEventListener('click', function() {
-  const now = Date.now();
-
-  if (now - lastClickTime > 1000) {
-    clickCount = 0;
-  }
-
-  clickCount++;
-  lastClickTime = now;
-
-  if (clickCount >= 5) {
-    clickCount = 0;
-    document.getElementById('adminPanel').style.display = 'flex';
-  }
-});
-
-// -----------------------------
-// Fitur: Login Admin
-// -----------------------------
-const loginBtn = document.getElementById('loginBtn');
-const msg = document.getElementById('loginMsg');
-
-loginBtn.addEventListener('click', function() {
-  const user = document.getElementById('adminUser').value.trim();
-  const pass = document.getElementById('adminPass').value.trim();
-
-  const ADMIN_USER = "Zlink";     // 🔑 Username admin
-  const ADMIN_PASS = "1234";      // 🔒 Password admin
-
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    msg.style.color = "green";
-    msg.textContent = "Login berhasil!";
-    setTimeout(() => {
-      document.getElementById('adminPanel').style.display = 'none';
-      alert("✅ Selamat datang Admin!");
-      // Di sini bisa tambahkan: tampilkan menu admin, edit config, dsb.
-    }, 800);
-  } else {
-    msg.style.color = "red";
-    msg.textContent = "Username atau password salah!";
-  }
-});
-
-// Tutup panel dengan klik di luar kotak
-document.getElementById('adminPanel').addEventListener('click', function(e) {
-  if (e.target.id === "adminPanel") {
-    document.getElementById('adminPanel').style.display = 'none';
-  }
-});
 
 let config = {};
 let jenisDipilih="", layananDipilih="", deliveryDipilih="";
@@ -118,3 +63,58 @@ function submitOrder(tujuan){
 }
 
 window.onload = ()=>{ loadConfig(); document.getElementById("year").textContent=(new Date()).getFullYear(); };
+// -----------------------------
+// Fitur: Klik cepat 5x untuk buka login admin
+// -----------------------------
+let clickCount = 0;
+let lastClickTime = 0;
+
+document.getElementById('siteTitle').addEventListener('click', function() {
+  const now = Date.now();
+
+  if (now - lastClickTime > 1000) {
+    clickCount = 0;
+  }
+
+  clickCount++;
+  lastClickTime = now;
+
+  if (clickCount >= 5) {
+    clickCount = 0;
+    document.getElementById('adminPanel').style.display = 'flex';
+  }
+});
+
+// -----------------------------
+// Fitur: Login Admin
+// -----------------------------
+const loginBtn = document.getElementById('loginBtn');
+const msg = document.getElementById('loginMsg');
+
+loginBtn.addEventListener('click', function() {
+  const user = document.getElementById('adminUser').value.trim();
+  const pass = document.getElementById('adminPass').value.trim();
+
+  const ADMIN_USER = "Zlink";     // 🔑 Username admin
+  const ADMIN_PASS = "1234";      // 🔒 Password admin
+
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    msg.style.color = "green";
+    msg.textContent = "Login berhasil!";
+    setTimeout(() => {
+      document.getElementById('adminPanel').style.display = 'none';
+      alert("✅ Selamat datang Admin!");
+      // Di sini bisa tambahkan: tampilkan menu admin, edit config, dsb.
+    }, 800);
+  } else {
+    msg.style.color = "red";
+    msg.textContent = "Username atau password salah!";
+  }
+});
+
+// Tutup panel dengan klik di luar kotak
+document.getElementById('adminPanel').addEventListener('click', function(e) {
+  if (e.target.id === "adminPanel") {
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+});

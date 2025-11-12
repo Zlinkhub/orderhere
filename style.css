@@ -45,3 +45,45 @@ footer{ margin-top:12px; margin-bottom: 10px ; text-align:center; color:#fff4d6;
 @media(max-width:700px){
   .btn{ min-width:40% }
 }
+
+/* 🔒 Panel Admin (awal tersembunyi) */
+#adminPanel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.admin-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.admin-box input {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.admin-box button {
+  background: #2196F3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-box button:hover {
+  background: #1976D2;
+}

@@ -1,116 +1,268 @@
-let config = {};
-let jenisDipilih = "", layananDipilih = "", deliveryDipilih = "";
-let lokasiTeks = "";
+:root {
+  --accent: #ffa93a;
+  --accent-2: #ff8c00;
+  --bg: linear-gradient(180deg, #000, #ff8c00 80%);
+}
 
-const DEFAULT_PATH = "config.json";
+* { box-sizing: border-box; }
 
-/* ===========================
-   Load dan terapkan konfigurasi
-=========================== */
-async function loadConfig() {
-  try {
-    const resp = await fetch(DEFAULT_PATH);
-    config = await resp.json();
-    applyConfigToUI();
-  } catch (e) {
-    console.error("loadConfig", e);
-    config = {};
+body {
+  margin: 18px auto;
+  max-width: 760px;
+  font-family: Inter, Arial, sans-serif;
+  color: #fff;
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* 🧩 Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  flex: 0 0 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--accent);
+  cursor: default;
+  user-select: none;
+}
+
+p.sub {
+  margin: 2px 0 0;
+  color: #fff4d6;
+  font-size: 13px;
+}
+
+/* 📋 Form */
+form {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  color: #fffbe6;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+/* 🔢 Input umum */
+input[type=text],
+input[type=tel],
+input[type=time],
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  background: #fff8ee;
+  color: #000;
+}
+
+/* Tombol-tombol pilihan */
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn.small {
+  min-width: 90px;
+  padding: 6px 8px;
+  font-size: 15px;
+}
+
+.btn.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Lokasi */
+.loc-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.loc-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: #fff8ee;
+  color: #000;
+  border: none;
+}
+
+.loc-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Tombol kirim */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.admin-send {
+  background: #25d366;
+  color: #000;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  font-weight: 700;
+}
+
+.kurir-send {
+  background: var(--accent-2);
+  color: #000;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  font-weight: 700;
+}
+
+/* Footer */
+footer {
+  margin-top: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #fff4d6;
+  font-size: 13px;
+}
+
+/* 🔴 Input invalid */
+.invalid {
+  outline: 2px solid #ff3b3b !important;
+  box-shadow: 0 0 0 3px rgba(255, 59, 59, 0.08);
+}
+
+/* 📱 Responsif */
+@media (max-width: 700px) {
+  .btn {
+    min-width: 40%;
   }
 }
 
-/* ===========================
-   Terapkan konfigurasi ke tampilan
-=========================== */
-function applyConfigToUI() {
-  document.getElementById("logoImg").src = config.logo;
-  document.getElementById("siteTitle").textContent = "🧺 " + config.namaLaundry;
-  document.getElementById("footerName").textContent = config.namaLaundry;
-  document.documentElement.style.setProperty("--accent-2", config.warna);
-  document.documentElement.style.setProperty("--accent", config.warna);
-  document.body.style.background = config.background;
-  populateLayananButtons();
+/* 🔒 Panel Admin (awal tersembunyi) */
+#adminPanel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-/* ===========================
-   Tampilkan daftar layanan
-=========================== */
-function populateLayananButtons() {
-  const container = document.getElementById("layananGroup");
-  container.innerHTML = "";
-
-  (config.layananKiloan || []).forEach(it => {
-    const d = document.createElement("div");
-    d.className = "btn layanan kiloan";
-    d.textContent = it;
-    d.onclick = () => pilihLayanan(it, d);
-    d.style.display = "none";
-    container.appendChild(d);
-  });
-
-  (config.layananSatuan || []).forEach(it => {
-    const d = document.createElement("div");
-    d.className = "btn layanan satuan";
-    d.textContent = it;
-    d.onclick = () => pilihLayanan(it, d);
-    d.style.display = "none";
-    container.appendChild(d);
-  });
+.admin-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ===========================
-   Pemilihan kategori dan layanan
-=========================== */
-function pilihJenis(j, el) {
-  jenisDipilih = j;
-  layananDipilih = "";
-  document.querySelectorAll("#jenisGroup .btn").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
-
-  document.querySelectorAll(".layanan").forEach(b => {
-    const tampil = (j === "Kiloan" ? b.classList.contains("kiloan") : b.classList.contains("satuan"));
-    b.style.display = tampil ? "block" : "none";
-    b.classList.remove("active");
-  });
+.admin-box input {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-function pilihLayanan(l, el) {
-  layananDipilih = l;
-  document.querySelectorAll(".layanan").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
+.admin-box button {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-function pilihDelivery(d, el) {
-  deliveryDipilih = d;
-  document.querySelectorAll("#deliveryGroup .btn").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
+.admin-box button:hover {
+  background: #1976d2;
 }
 
-/* ===========================
-   Ambil lokasi otomatis
-=========================== */
-function ambilLokasi() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        lokasiTeks = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        document.getElementById("lokasi").value = "Lokasi berhasil diambil ✅";
-      },
-      err => {
-        alert("Aktifkan izin lokasi");
-      },
-      { timeout: 10000 }
-    );
-  } else {
-    alert("Browser tidak mendukung geolokasi.");
-  }
+/* ❌ Tombol Hapus Otomatis di Input (Nama & WA) */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* ===========================
-   Kirim pesanan ke WhatsApp
-=========================== */
-function submitOrder(tujuan) {
-  const nama = document.getElementById("nama").value.trim();
-  if (!nama || !jenisDipilih || !layananDipilih || !deliveryDipilih) {
+.input-wrap input {
+  width: 100%;
+  padding-right: 28px; /* Ruang untuk tombol ❌ */
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  cursor: pointer;
+  color: #888;
+  font-size: 16px;
+  display: none; /* hanya tampil kalau ada teks */
+  user-select: none;
+}
+
+.clear-btn:hover {
+  color: red;
+}  if (!nama || !jenisDipilih || !layananDipilih || !deliveryDipilih) {
     alert("Isi semua field wajib!");
     return;
   }

@@ -105,6 +105,37 @@
   </div>
 </div>
 
+<!-- 🧠 Simpan Otomatis Nama & Nomor WhatsApp -->
+<script>
+  const namaInput = document.getElementById("nama");
+  const nohpInput = document.getElementById("nohp");
+
+  // Saat halaman dibuka, ambil data tersimpan dari localStorage
+  window.addEventListener("load", () => {
+    const savedNama = localStorage.getItem("customer_nama");
+    const savedNo = localStorage.getItem("customer_nohp");
+
+    if (savedNama) namaInput.value = savedNama;
+    if (savedNo) nohpInput.value = savedNo;
+  });
+
+  // Simpan otomatis setiap kali pengguna mengetik di kolom nama
+  namaInput.addEventListener("input", () => {
+    const currentNama = namaInput.value.trim();
+    if (currentNama !== "") {
+      localStorage.setItem("customer_nama", currentNama);
+    }
+  });
+
+  // Simpan otomatis setiap kali pengguna mengetik di kolom nomor WhatsApp
+  nohpInput.addEventListener("input", () => {
+    const currentNo = nohpInput.value.trim();
+    if (currentNo !== "") {
+      localStorage.setItem("customer_nohp", currentNo);
+    }
+  });
+</script>
+
 <script src="script.js"></script>
 </body>
 </html>

@@ -7,11 +7,8 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="topbar">
-  <div class="logo" id="logoWrap">
-    <img id="logoImg" src="https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png" alt="logo">
-  </div>
+  <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
   <div style="flex:1">
     <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
     <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
@@ -23,10 +20,12 @@
     <label>👤 Order atas Nama: *</label>
     <input id="nama" type="text" placeholder="Nama Anda">
   </div>
+
   <div>
     <label>📱 Nomor WhatsApp (opsional)</label>
     <input id="nohp" type="tel" placeholder="WhatsApp aktif">
   </div>
+
   <div>
     <label>Jenis Laundry *</label>
     <div class="btn-group" id="jenisGroup">
@@ -34,10 +33,12 @@
       <div class="btn" onclick="pilihJenis('Satuan', this)">Satuan</div>
     </div>
   </div>
+
   <div>
     <label>Pilihan Layanan *</label>
     <div class="btn-group" id="layananGroup"></div>
   </div>
+
   <div>
     <label>⏱️ Estimasi Service *</label>
     <select id="estimasi">
@@ -47,6 +48,7 @@
       <option>Sameday</option>
     </select>
   </div>
+
   <div>
     <label>🚚 Pilihan Pengiriman *</label>
     <div class="btn-group" id="deliveryGroup">
@@ -56,10 +58,12 @@
       <div class="btn" onclick="pilihDelivery('Drop Off', this)">Drop Off</div>
     </div>
   </div>
+
   <div>
     <label>🕒 Waktu (opsional)</label>
     <input id="waktu" type="time">
   </div>
+
   <div>
     <label>📍 Lokasi (opsional)</label>
     <div class="loc-row">
@@ -67,68 +71,40 @@
       <button type="button" class="loc-btn" onclick="ambilLokasi()">📍</button>
     </div>
   </div>
+
   <div>
     <label>🏠 Alamat / blok / no.rumah (opsional)</label>
     <input id="alamat" type="text" placeholder="Contoh: i01/38">
   </div>
+
   <div>
     <label>📝 Catatan (opsional)</label>
     <input id="note" type="text" placeholder="contoh: request parfum">
   </div>
+
   <div class="actions">
     <button type="button" class="admin-send" onclick="submitOrder('admin')">✉️ Kirim ke Admin</button>
     <button type="button" class="kurir-send" onclick="submitOrder('kurir')">🚚 Kirim ke Kurir</button>
   </div>
+
   <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
 </form>
 
-<!-- PANEL ADMIN TERSEMBUNYI -->
-<div id="adminPanel" style="display:none; padding:20px; background:#f3f3f3; border-top:2px solid #ccc;">
-  <h2>Panel Admin</h2>
-  <form id="adminLogin" onsubmit="event.preventDefault(); cekLogin();">
-    <input type="text" id="adminUser" placeholder="Username">
-    <input type="password" id="adminPass" placeholder="Password">
-    <button type="submit">Login</button>
-  </form>
-  <p id="loginMsg"></p>
-</div>
-
 <footer>
-  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span> — Created by fauzi.aff
+  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
 </footer>
 
-<!-- SCRIPTS -->
-<script>
-let clickCount = 0;
-let lastClickTime = 0;
-
-document.getElementById('siteTitle').addEventListener('click', function() {
-  const now = Date.now();
-  if (now - lastClickTime > 1000) clickCount = 0;
-  clickCount++;
-  lastClickTime = now;
-  if (clickCount >= 5) {
-    clickCount = 0;
-    document.getElementById("adminPanel").style.display = "block";
-  }
-});
-
-function cekLogin() {
-  const user = document.getElementById('adminUser').value;
-  const pass = document.getElementById('adminPass').value;
-  const msg = document.getElementById('loginMsg');
-
-  if (user === "Zlink" && pass === "1234") {
-    msg.innerHTML = "✅ Login berhasil! Anda masuk sebagai admin.";
-  } else {
-    msg.innerHTML = "❌ Username atau password salah.";
-  }
-}
-
-document.getElementById("year").textContent = new Date().getFullYear();
-</script>
+<!-- Panel Admin (tersembunyi) -->
+<div id="adminPanel" style="display:none;">
+  <div class="admin-box">
+    <h3>Login Admin</h3>
+    <input id="adminUser" type="text" placeholder="Username">
+    <input id="adminPass" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <p id="loginMsg"></p>
+  </div>
+</div>
 
 <script src="script.js"></script>
-
 </body>
 </html>

@@ -1,13 +1,12 @@
-
-// script.js
-
+// -----------------------------
+// Fitur: Klik cepat 5x untuk buka login admin
+// -----------------------------
 let clickCount = 0;
 let lastClickTime = 0;
 
 document.getElementById('siteTitle').addEventListener('click', function() {
   const now = Date.now();
 
-  // Jika klik lebih dari 1 detik dari sebelumnya, reset hitungan
   if (now - lastClickTime > 1000) {
     clickCount = 0;
   }
@@ -15,22 +14,45 @@ document.getElementById('siteTitle').addEventListener('click', function() {
   clickCount++;
   lastClickTime = now;
 
-  // Jika klik cepat 5x berturut-turut
   if (clickCount >= 5) {
-    clickCount = 0; // reset setelah berhasil
-    openAdminPanel(); // fungsi untuk buka panel admin
+    clickCount = 0;
+    document.getElementById('adminPanel').style.display = 'flex';
   }
 });
 
-// Fungsi membuka admin tersembunyi
-function openAdminPanel() {
-  alert("🔐 Mode Admin Aktif!");
-  document.body.classList.add("admin-active");
+// -----------------------------
+// Fitur: Login Admin
+// -----------------------------
+const loginBtn = document.getElementById('loginBtn');
+const msg = document.getElementById('loginMsg');
 
-  // Atau tampilkan elemen admin tersembunyi:
-  const adminPanel = document.getElementById("adminPanel");
-  if (adminPanel) adminPanel.style.display = "block";
-}
+loginBtn.addEventListener('click', function() {
+  const user = document.getElementById('adminUser').value.trim();
+  const pass = document.getElementById('adminPass').value.trim();
+
+  const ADMIN_USER = "Zlink";     // 🔑 Username admin
+  const ADMIN_PASS = "1234";      // 🔒 Password admin
+
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    msg.style.color = "green";
+    msg.textContent = "Login berhasil!";
+    setTimeout(() => {
+      document.getElementById('adminPanel').style.display = 'none';
+      alert("✅ Selamat datang Admin!");
+      // Di sini bisa tambahkan: tampilkan menu admin, edit config, dsb.
+    }, 800);
+  } else {
+    msg.style.color = "red";
+    msg.textContent = "Username atau password salah!";
+  }
+});
+
+// Tutup panel dengan klik di luar kotak
+document.getElementById('adminPanel').addEventListener('click', function(e) {
+  if (e.target.id === "adminPanel") {
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+});
 
 let config = {};
 let jenisDipilih="", layananDipilih="", deliveryDipilih="";

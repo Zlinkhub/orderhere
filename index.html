@@ -19,20 +19,15 @@
 </div>
 
 <form id="laundryForm" onsubmit="event.preventDefault();">
- <div>
-  <label>👤 Order atas Nama: *</label>
-  <div class="input-wrap">
+  <div>
+    <label>👤 Order atas Nama: *</label>
     <input id="nama" type="text" placeholder="Nama Anda">
-    <span class="clear-btn" onclick="clearInput('nama')">✖</span>
   </div>
-  
-<div>
-  <label>📱 Nomor WhatsApp (opsional)</label>
-  <div class="input-wrap">
+  <div>
+    <label>📱 Nomor WhatsApp (opsional)</label>
     <input id="nohp" type="tel" placeholder="WhatsApp aktif">
-    <span class="clear-btn" onclick="clearInput('nohp')">✖</span>
   </div>
-</div>
+  <div>
     <label>Jenis Laundry *</label>
     <div class="btn-group" id="jenisGroup">
       <div class="btn" onclick="pilihJenis('Kiloan', this)">Kiloan</div>
@@ -99,10 +94,9 @@
 </div>
 
 <footer>
-  © <span id="year"></span> <span id="footerName">Team Azayaka Laundry</span> 
+  © <span id="year"></span> <span id="footerName">Azayaka Laundry</span> — Created by fauzi.aff
 </footer>
-  ™ <span id="created by"></span> <span id="footerName">fauzi.aff</span> 
-</footer>
+
 <!-- SCRIPTS -->
 <script>
 let clickCount = 0;
@@ -132,59 +126,9 @@ function cekLogin() {
 }
 
 document.getElementById("year").textContent = new Date().getFullYear();
-
-<!-- SIMPAN OTOMATIS NOMOR WHATSAPP -->
-<script>
-  const nohpInput = document.getElementById("nohp");
-
-  // Saat halaman dimuat, ambil nomor terakhir dari localStorage
-  window.addEventListener("load", () => {
-    const savedNo = localStorage.getItem("customer_nohp");
-    if (savedNo) {
-      nohpInput.value = savedNo;
-    }
-  });
-
-  // Saat pengguna mengubah nomor, simpan otomatis ke localStorage
-  nohpInput.addEventListener("input", () => {
-    const currentNo = nohpInput.value.trim();
-    if (currentNo !== "") {
-      localStorage.setItem("customer_nohp", currentNo);
-    }
-  });
-</script>
 </script>
 
 <script src="script.js"></script>
-<!-- 🧠 Simpan Otomatis Nama & Nomor WhatsApp -->
-<script>
-  const namaInput = document.getElementById("nama");
-  const nohpInput = document.getElementById("nohp");
 
-  // Saat halaman dibuka, ambil data tersimpan dari localStorage
-  window.addEventListener("load", () => {
-    const savedNama = localStorage.getItem("customer_nama");
-    const savedNo = localStorage.getItem("customer_nohp");
-
-    if (savedNama) namaInput.value = savedNama;
-    if (savedNo) nohpInput.value = savedNo;
-  });
-
-  // Simpan otomatis setiap kali pengguna mengetik di kolom nama
-  namaInput.addEventListener("input", () => {
-    const currentNama = namaInput.value.trim();
-    if (currentNama !== "") {
-      localStorage.setItem("customer_nama", currentNama);
-    }
-  });
-
-  // Simpan otomatis setiap kali pengguna mengetik di kolom nomor WhatsApp
-  nohpInput.addEventListener("input", () => {
-    const currentNo = nohpInput.value.trim();
-    if (currentNo !== "") {
-      localStorage.setItem("customer_nohp", currentNo);
-    }
-  });
-</script>
 </body>
 </html>

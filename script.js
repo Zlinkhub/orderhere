@@ -222,9 +222,3 @@ window.onload = ()=>{
   document.getElementById("year").textContent = (new Date()).getFullYear();
   loadSavedWA();
 };
-// Tutup panel dengan klik di luar kotak
-document.getElementById('adminPanel').addEventListener('click', function(e) {
-if (e.target.id === "adminPanel") {
-document.getElementById('adminPanel').style.display = 'none';
-}
-});

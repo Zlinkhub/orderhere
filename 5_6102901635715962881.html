@@ -1,0 +1,893 @@
+<!doctype html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Azayaka Laundry - Order</title>
+<meta name="description" content="Form pemesanan Azayaka Laundry — admin bisa konfigurasi dan sync ke GitHub config.json" />
+<head>
+<style>
+  :root{
+    --accent:#ffa93a;
+    --accent-2:#ff8c00;
+    --bg: linear-gradient(180deg,#000,#ff8c00 80%);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:18px auto; max-width:760px; font-family:Inter, Arial, sans-serif;
+    color:#fff; padding:18px; border-radius:12px;
+    background:var(--bg); box-shadow:0 10px 36px rgba(0,0,0,0.45);
+  }
+
+  .topbar { display:flex; align-items:center; gap:12px; }
+  .logo { width:72px; height:72px; border-radius:10px; overflow:hidden; background:#fff; flex:0 0 72px; display:flex; align-items:center; justify-content:center;}
+  .logo img{ width:100%; height:100%; object-fit:cover; }
+  h1{ margin:0; font-size:20px; color:var(--accent); cursor:default; user-select:none; }
+  p.sub{ margin:2px 0 0; color:#fff4d6; font-size:13px }
+
+  form{ margin-top:14px; display:grid; gap:12px; }
+  label{ display:block; font-weight:600; color:#fffbe6; margin-bottom:10px; font-size:13px }
+  input[type=text], input[type=tel], input[type=time], select, textarea{
+    width:100%; padding:10px; border-radius:8px; border:none; font-size:12px; background:#fff8ee; color:#000;
+  }
+
+  .btn-group{ display:flex; gap:8px; flex-wrap:wrap;font-size: 12px ; }
+  .btn{ flex:1; min-width:120px; padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.12); text-align:center; cursor:pointer; }
+  .btn.small{ min-width:90px; padding:6px 8px; font-size:15px }
+  .btn.active{ background:var(--accent); color:#000; font-weight:700; border-color:rgba(0,0,0,0.08) }
+
+  .loc-row{ display:flex; gap:8px; align-items:center }
+  .loc-input{ flex:1; padding:10px; border-radius:8px; background:#fff8ee; color:#000; border:none; }
+  .loc-btn{ width:44px; height:44px; border-radius:50%; background:var(--accent); border:none; cursor:pointer; font-size:18px }
+
+  .actions{ display:flex; gap:12px; margin-top:6px }
+  .admin-send{ background:#25d366; color:#000; padding:10px; border-radius:8px; border:none; cursor:pointer; flex:1; font-weight:700 }
+  .kurir-send{ background:var(--accent-2); color:#000; padding:10px; border-radius:8px; border:none; cursor:pointer; flex:1; font-weight:700 }
+
+  footer{ margin-top:12px; margin-bottom: 10px ; text-align:center; color:#fff4d6; font-size:13px }
+
+  /* admin modal */
+  .hidden{ display:none }
+  .modal-backdrop{ position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999 }
+  .admin-modal{ width:94%; max-width:900px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.35)); padding:16px; border-radius:12px; color:#fff; box-shadow:0 12px 40px rgba(0,0,0,0.6) }
+
+  .admin-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  .chip{ background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
+  .panel-cta{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; backdrop-filter: blur(4px); font-size:10px;
+  }
+
+  .muted{ color:#fff4d6; font-size:13px }
+
+  /* browser open button top-right */
+  .open-browser {
+    position: fixed; font-size: 8px ; right:12px; top:8px; z-index:9998;
+    background: rgba(255,255,255,0.08); color:#fff; border-radius:8px;
+    padding:6px 8px; border:1px solid rgba(255,255,255,0.12); cursor:pointer; backdrop-filter: blur(4px); font-size:10px;
+  }
+  .open-browser:hover{ opacity:0.95 }
+
+  /* red border for invalid */
+  .invalid { outline: 2px solid #ff3b3b !important; box-shadow: 0 0 0 3px rgba(255,59,59,0.08); }
+
+  @media(max-width:700px){
+    .admin-grid{ grid-template-columns:1fr }
+    .btn{ min-width:40% }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo" id="logoWrap"><img id="logoImg" src="" alt="logo"></div>
+    <div style="flex:1">
+      <h1 id="siteTitle" title="Klik cepat 5x untuk admin tersembunyi">🧺 Azayaka Laundry</h1>
+      <p class="sub" id="siteSubtitle">Form pemesanan Laundry — kirim via WhatsApp</p>
+    </div>
+  </div>
+
+  <!-- Open in browser button (will be hidden if already in browser) -->
+  <button id="openBrowserBtn" class="open-browser" style="display:none;" onclick="openInBrowser()">🌐 Buka di Browser</button>
+
+  <form id="laundryForm" onsubmit="event.preventDefault();">
+    <div>
+      <label id="lblNama">👤 Order atas Nama: *</label>
+      <input id="nama" type="text" placeholder="Nama Anda">
+    </div>
+
+    <div>
+      <label id="lblNoHp">📱 Nomor WhatsApp (opsional)</label>
+      <input id="nohp" type="tel" placeholder="WhatsApp aktif">
+    </div>
+
+    <div>
+      <label id="lblJenis">Jenis Laundry *</label>
+      <div class="btn-group" id="jenisGroup">
+        <div class="btn" onclick="pilihJenis('Kiloan', this)">Kiloan</div>
+        <div class="btn" onclick="pilihJenis('Satuan', this)">Satuan</div>
+      </div>
+    </div>
+
+    <div>
+      <label id="lblLayanan">Pilihan Layanan *</label>
+      <div class="btn-group" id="layananGroup">
+        <!-- diisi dinamis -->
+      </div>
+    </div>
+
+    <div>
+      <label id="lblEstimasi">⏱️ Estimasi Service *</label>
+      <select id="estimasi">
+        <option value="">-- Pilih estimasi --</option>
+        <option>Reguler (3 hari)</option>
+        <option>Express (1 hari)</option>
+        <option>Sameday</option>
+      </select>
+    </div>
+
+    <div>
+      <label id="lblDelivery">🚚 Pilihan Pengiriman *</label>
+      <hidden
+      <div class="btn-group" id="deliveryGroup">
+        <div class="btn" onclick="pilihDelivery('Jemput', this)">Jemput</div>
+        <div class="btn" onclick="pilihDelivery('Antar', this)">Antar</div>
+        <div class="btn" onclick="pilihDelivery('Jemput & Antar', this)">Jemput & Antar</div>
+
+      </div>
+        <div class="btn" onclick="pilihDelivery('Drop Off', this)">Drop Off</div>
+    </div>
+
+    <div>
+      <label id="labelWaktu">🕒 Waktu (opsional)</label>
+      <input id="waktu" type="time">
+    </div>
+
+    <div>
+      <label id="labelLokasi">📍 Lokasi (opsional)</label>
+      <p class="muted" id="noteLokasi">📍 Gunakan browser (Chrome) agar fitur lokasi berfungsi baik.</p>
+      <div class="loc-row">
+        <input id="lokasi" class="loc-input" readonly placeholder="Klik 📍 untuk ambil lokasi otomatis (opsional)">
+        <button type="button" class="loc-btn" onclick="ambilLokasi()">📍</button>
+      </div>
+    </div>
+
+    <div>
+      <label id="lblAlamat">🏠 Alamat / blok / no.rumah (opsional)</label>
+      <input id="alamat" type="text" placeholder="Contoh: i01/38">
+    </div>
+
+    <div>
+      <label id="lblCatatan">📝 Catatan (opsional)</label>
+      <input id="note" type="text" placeholder="contoh: request parfum">
+    </div>
+
+    <div class="actions">
+      <button type="button" class="admin-send" onclick="submitOrder('admin')">✉️ Kirim ke Admin</button>
+      <button type="button" class="kurir-send" onclick="submitOrder('kurir')">🚚 Kirim ke Kurir</button>
+    </div>
+
+    <div id="externalLinks" style="margin-top:8px;" class="muted"></div>
+  </form>
+
+  <footer>
+    © <span id="year"></span> <span id="footerName">Azayaka Laundry</span>
+  </footer>
+
+  <!-- Admin modal -->
+  <div id="adminModalBackdrop" class="hidden" onclick="closeAdminModal(event)">
+    <div class="admin-modal" onclick="event.stopPropagation()">
+      <h3 style="margin-top:0;">⚙️ Panel Admin</h3>
+
+      <div id="adminLoginBox">
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+          <label style="min-width:60px">Username</label>
+          <input id="adminUser" type="text" placeholder="Zeuzi">
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <label style="min-width:60px">Password</label>
+          <input id="adminPass" type="password" placeholder="****">
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <button onclick="handleAdminLogin()" style="background:var(--accent); color:#000 ; padding:8px 10px; border-radius:8px; border:none; cursor:pointer">Login</button>
+          <button onclick="closeAdminModal()">Batal</button>
+        </div>
+        <p class="muted">Login admin tersembunyi: Admin klik judul 5x.</p>
+      </div>
+
+      <div id="adminPanel" class="hidden">
+        <div class="admin-grid">
+          <div>
+            <label>Logo (upload / URL)</label>
+            <input type="file" id="logoUpload" accept="image/*">
+            <input id="logoUrl" type="text" placeholder="Atau tempel URL logo di sini" style="margin-top:6px">
+            <div style="margin-top:10px">
+              <label>Nama Merk</label>
+              <input id="adminNama" type="text" placeholder="Azayaka Laundry">
+            </div>
+            <div style="margin-top:8px">
+              <label>Warna Tema</label>
+              <input id="adminWarna" type="color" value="#ff8c00">
+            </div>
+            <div style="margin-top:10px">
+              <label>Nomor WhatsApp Admin</label>
+              <input id="adminPhone" type="tel" placeholder="6287...">
+              <label style="margin-top:8px">Nomor WhatsApp Kurir</label>
+              <input id="kurirPhone" type="tel" placeholder="6285...">
+            </div>
+          </div>
+
+          <div>
+            <label>Daftar Layanan Satuan (tambah)</label>
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <input id="newSatuan" type="text" placeholder="Contoh: Sepatu">
+              <button onclick="tambahSatuan()" class="btn small">Tambah</button>
+            </div>
+            <div id="satuanList" style="margin-top:8px; max-height:220px; overflow:auto"></div>
+
+            <div style="margin-top:12px">
+              <label>Tautan (key|url — satu per baris)</label>
+              <textarea id="linksArea" style="height:110px" placeholder="Pricelist|https://..."></textarea>
+              <div id="linksList" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="opacity:0.12; margin:12px 0">
+
+        <h4 style="margin:4px 0">GitHub Sync (otomatis update config.json)</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <input id="ghOwner" type="text" placeholder="Owner (GitHub)" style="flex:1; min-width:160px">
+          <input id="ghRepo" type="text" placeholder="Repo" style="flex:1; min-width:160px">
+          <input id="ghBranch" type="text" placeholder="Branch (main)" style="flex:1; min-width:120px">
+          <input id="ghPath" type="text" placeholder="File path (config.json)" style="flex:1; min-width:120px">
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <input id="ghPAT" type="password" placeholder="Personal Access Token (PAT)" style="flex:1">
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px;">
+            <input id="savePAT" type="checkbox"> Simpan PAT di perangkat
+          </label>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button onclick="saveToGitHub()" style="background:#0a84ff; color:#fff; padding:8px 10px; border-radius:8px; border:none; cursor:pointer">Simpan ke GitHub</button>
+          <button onclick="previewLocalAdmin()" style="background:#2b6; color:#000; padding:8px 10px; border-radius:8px; border:none; cursor:pointer">Preview Lokal</button>
+          <button onclick="resetConfig()" style="background:#f44336; color:#fff; padding:8px 10px; border-radius:8px; border:none; cursor:pointer">Reset ke Default</button>
+        </div>
+
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button onclick="exportConfig()" style="padding:8px 10px; border-radius:8px;">Export JSON</button>
+          <button onclick="importConfigPrompt()" style="padding:8px 10px; border-radius:8px;">Import JSON</button>
+          <button onclick="clearPAT()" style="padding:8px 10px; border-radius:8px; background:#444; color:#fff;">Hapus PAT</button>
+        </div>
+
+        <div id="adminMsg" style="margin-top:10px" class="muted"></div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/* ================== DEFAULT & KEYS ================== */
+const DEFAULT = {
+  namaLaundry: "Azayaka Laundry",
+  logo: "https://static.1010dry.id/pesanlaundry/images/5f486d5d5fb3cbf0ab6dc2278ee9a997.png",
+  warna: "#ff8c00",
+  layananKiloan: ["Cuci + Setrika", "Cuci Kering Lipat", "Setrika Saja"],
+  layananSatuan: ["Dry Clean","Pakaian","Bedcover","Selimut","Sprei","Sprei Set","Karpet","Sepatu","Tas","Topi","Lainnya"],
+  links: { "Pricelist": "", "Instagram": "", "Website": "" },
+  whatsappAdmin: "6287853561541",
+  whatsappKurir: "6285246756360",
+  github: { owner: "Zlinkhub", repo: "orderhere", branch: "main", path: "config.json" }
+};
+const CFG_KEY = "azayaka_config_global_v3";
+const PAT_KEY = "azayaka_pat_v3";
+const CUST_NAME = "azayaka_nama_v3";
+const CUST_PHONE = "azayaka_nohp_v3";
+
+/* ================== state ================== */
+let config = {};
+let jenisDipilih="", layananDipilih="", deliveryDipilih="";
+let lokasiTeks = "";
+
+/* ================== load local config or default; then try load remote config from GitHub ================ */
+function loadLocalConfig(){
+  try{
+    const raw = localStorage.getItem(CFG_KEY);
+    if(raw){
+      config = Object.assign({}, DEFAULT, JSON.parse(raw));
+    } else {
+      config = Object.assign({}, DEFAULT);
+      localStorage.setItem(CFG_KEY, JSON.stringify(config));
+    }
+  }catch(e){
+    console.error("loadLocalConfig", e);
+    config = Object.assign({}, DEFAULT);
+  }
+}
+async function loadRemoteConfigIfExists(){
+  // try to fetch raw config from GitHub repo specified in local config
+  const gh = config.github || DEFAULT.github;
+  const owner = gh.owner || DEFAULT.github.owner;
+  const repo = gh.repo || DEFAULT.github.repo;
+  const branch = gh.branch || DEFAULT.github.branch;
+  const path = gh.path || DEFAULT.github.path;
+  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+  try{
+    const r = await fetch(rawUrl, {cache: "no-store"});
+    if(r.ok){
+      const data = await r.json();
+      config = Object.assign({}, DEFAULT, data);
+      // update local copy
+      localStorage.setItem(CFG_KEY, JSON.stringify(config));
+      applyConfigToUI();
+      showAdminMsg("Config dimuat dari GitHub: " + owner + "/" + repo + "/" + path);
+    } else {
+      console.info("Remote config not found (status="+r.status+"): using local config");
+      applyConfigToUI();
+    }
+  }catch(e){
+    console.warn("loadRemoteConfigIfExists failed", e);
+    applyConfigToUI();
+  }
+}
+
+/* ================== apply config to UI ================== */
+function applyConfigToUI(){
+  document.getElementById("logoImg").src = config.logo || DEFAULT.logo;
+  document.getElementById("siteTitle").textContent = "🧺 " + (config.namaLaundry || DEFAULT.namaLaundry);
+  document.getElementById("footerName").textContent = config.namaLaundry || DEFAULT.namaLaundry;
+  document.documentElement.style.setProperty('--accent-2', config.warna || DEFAULT.warna);
+  document.documentElement.style.setProperty('--accent', shadeHex(config.warna || DEFAULT.warna, -6) || "#ffa93a");
+  populateLayananButtons();
+  renderExternalLinks();
+}
+
+/* shade helper */
+function shadeHex(hex, percent) {
+  try {
+    hex = hex.replace('#','');
+    let R = parseInt(hex.substring(0,2),16);
+    let G = parseInt(hex.substring(2,4),16);
+    let B = parseInt(hex.substring(4,6),16);
+    R = parseInt(R * (100+percent) / 100);
+    G = parseInt(G * (100+percent) / 100);
+    B = parseInt(B * (100+percent) / 100);
+    R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+    const rr = (R.toString(16).length==1)?"0"+R.toString(16):R.toString(16);
+    const gg = (G.toString(16).length==1)?"0"+G.toString(16):G.toString(16);
+    const bb = (B.toString(16).length==1)?"0"+B.toString(16):B.toString(16);
+    return "#"+rr+gg+bb;
+  } catch(e) { return null; }
+}
+
+/* ================== layanan buttons ================== */
+function populateLayananButtons(){
+  const container = document.getElementById("layananGroup");
+  container.innerHTML = "";
+  (config.layananKiloan || DEFAULT.layananKiloan).forEach(item=>{
+    const d = document.createElement("div");
+    d.className = "btn layanan kiloan";
+    d.textContent = item;
+    d.onclick = ()=> pilihLayanan(item,d);
+    d.style.display = "none";
+    container.appendChild(d);
+  });
+  (config.layananSatuan || DEFAULT.layananSatuan).forEach(item=>{
+    const d = document.createElement("div");
+    d.className = "btn layanan satuan";
+    d.textContent = item;
+    d.onclick = ()=> pilihLayanan(item,d);
+    d.style.display = "none";
+    container.appendChild(d);
+  });
+}
+
+/* pilih jenis/layanan/delivery */
+function pilihJenis(jenis, el){
+  jenisDipilih = jenis; layananDipilih = "";
+  document.querySelectorAll('#jenisGroup .btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.layanan').forEach(b=>{
+    if(jenis === "Kiloan" && b.classList.contains('kiloan')) b.style.display="block";
+    else if(jenis === "Satuan" && b.classList.contains('satuan')) b.style.display="block";
+    else b.style.display="none";
+    b.classList.remove('active');
+  });
+}
+function pilihLayanan(layanan, el){
+  layananDipilih = layanan;
+  document.querySelectorAll('.layanan').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function pilihDelivery(mode, el){
+  deliveryDipilih = mode;
+  document.querySelectorAll('#deliveryGroup .btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const labelW = document.getElementById("labelWaktu");
+  const labelL = document.getElementById("labelLokasi");
+  const noteL = document.getElementById("noteLokasi");
+  const lokasiInput = document.getElementById("lokasi");
+  if(mode === "Antar"){
+    labelW.textContent = "🕒 Waktu Pengantaran (opsional)";
+    labelL.textContent = "📍 Lokasi Pengantaran (opsional)";
+    lokasiInput.placeholder = "Tulis lokasi antar atau klik 📍";
+    noteL.innerHTML = "📍 Pastikan alamat tujuan antar sudah benar sebelum dikirim.";
+  } else if(mode === "Jemput & Antar"){
+    labelW.textContent = "🕒 Waktu Jemput & Antar (opsional)";
+    labelL.textContent = "📍 Lokasi Jemput & Antar (opsional)";
+    lokasiInput.placeholder = "Klik 📍 untuk ambil lokasi utama";
+    noteL.innerHTML = "📍 Lokasi ini akan digunakan untuk jemput dan antar pesanan.";
+  } else if(mode === "Drop Off"){
+    labelW.textContent = "🕒 Waktu  (opsional)";
+    labelL.textContent = "📍 Lokasi Drop Off (opsional)";
+    lokasiInput.placeholder = "Tulis lokasi tempat Anda drop off laundry";
+    noteL.innerHTML = "🧺 Terima kasih! Pesanan akan diproses setelah tim menerima laundry Anda.";
+  } else {
+    labelW.textContent = "🕒 Waktu (opsional)";
+    labelL.textContent = "📍 Lokasi (opsional)";
+    lokasiInput.placeholder = "Klik 📍 untuk ambil lokasi otomatis";
+    noteL.innerHTML = "📍 Gunakan browser seperti Chrome agar fitur lokasi berfungsi dengan baik.";
+  }
+}
+
+/* ================== lokasi ================== */
+function ambilLokasi(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat = pos.coords.latitude, lon = pos.coords.longitude;
+      lokasiTeks = `https://www.google.com/maps?q=${lat},${lon}`;
+      document.getElementById("lokasi").value = "Lokasi berhasil diambil ✅";
+      showToast("Lokasi berhasil diambil.");
+    }, err=>{
+      alert("⚠️ Aktifkan izin lokasi agar fungsi dapat mengambil lokasi.");
+    }, {timeout:10000});
+  } else alert("Browser tidak mendukung geolokasi.");
+}
+
+/* simple toast */
+function showToast(msg){
+  const el = document.createElement("div");
+  el.textContent = msg;
+  Object.assign(el.style, {
+    position:'fixed', left:'50%', bottom:'22px', transform:'translateX(-50%)',
+    background:'rgba(0,0,0,0.7)', color:'#fff', padding:'8px 12px', borderRadius:'8px', zIndex:99999
+  });
+  document.body.appendChild(el);
+  setTimeout(()=> el.style.opacity = 0, 1600);
+  setTimeout(()=> el.remove(), 2200);
+}
+
+/* ================== VALIDASI (Gaya B) ==================
+ Wajib: Nama, Jenis, Layanan, Estimasi, Delivery
+ When missing -> add red border class .invalid temporarily and show alert listing required fields
+==================================================== */
+function validateRequired(){
+  const missing = [];
+  const nama = document.getElementById("nama").value.trim();
+  if(!nama) missing.push("Nama");
+  if(!jenisDipilih) missing.push("Jenis laundry");
+  if(!layananDipilih) missing.push("Layanan");
+  const estimasi = document.getElementById("estimasi").value;
+  if(!estimasi) missing.push("Estimasi");
+  if(!deliveryDipilih) missing.push("Delivery");
+  // apply red border to corresponding elements
+  const mark = (el)=> { if(el) { el.classList.add("invalid"); setTimeout(()=> el.classList.remove("invalid"), 2000); } };
+  if(!nama) mark(document.getElementById("nama"));
+  if(!jenisDipilih){
+    const btn = document.querySelector('#jenisGroup'); if(btn) mark(btn);
+  }
+  if(!layananDipilih){
+    const lg = document.querySelector('#layananGroup'); if(lg) mark(lg);
+  }
+  if(!estimasi) mark(document.getElementById("estimasi"));
+  if(!deliveryDipilih) mark(document.querySelector('#deliveryGroup'));
+  return missing;
+}
+
+/* ================== submit order ================== */
+function submitOrder(tujuan){
+  const missing = validateRequired();
+  if(missing.length){
+    alert("Kolom wajib belum lengkap:\n- " + missing.join("\n- "));
+    return;
+  }
+  // construct pesan
+  const nama = document.getElementById("nama").value.trim();
+  const nohp = document.getElementById("nohp").value.trim() || "-";
+  const estimasi = document.getElementById("estimasi").value;
+  const waktu = document.getElementById("waktu").value || "-";
+  const alamat = document.getElementById("alamat").value.trim() || "-";
+  const lokasi = lokasiTeks || "Tidak tersedia";
+  const tanggal = new Date().toLocaleString("id-ID", {dateStyle:"full", timeStyle:"short"});
+  const pesan = `🧺 *PESAN LAUNDRY* 🧺
+*${config.namaLaundry}*
+
+📅 _${tanggal}_
+
+👤 Nama: ${nama}
+📱 No. WA: ${nohp}
+🧥 Jenis: ${jenisDipilih}
+🧼 Layanan: ${layananDipilih}
+⏳ Estimasi: ${estimasi}
+🚚 Delivery: ${deliveryDipilih}
+🕓 Waktu: ${waktu}
+🏠 Alamat: ${alamat}
+📍 Lokasi: ${lokasi}
+
+_Terima kasih sudah memesan di ${config.namaLaundry}_`;
+  const encoded = encodeURIComponent(pesan);
+  const target = (tujuan === "admin") ? (config.whatsappAdmin || DEFAULT.whatsappAdmin) : (config.whatsappKurir || DEFAULT.whatsappKurir);
+  // save customer name & phone for auto-fill (optional)
+  try { localStorage.setItem(CUST_NAME, nama); localStorage.setItem(CUST_PHONE, nohp); } catch(e){}
+  // open wa
+  window.open(`https://wa.me/${target}?text=${encoded}`, "_blank");
+}
+
+/* ================== autofill customer ================== */
+function autofillCustomer(){
+  const n = localStorage.getItem(CUST_NAME);
+  const p = localStorage.getItem(CUST_PHONE);
+  if(n) document.getElementById("nama").value = n;
+  if(p) document.getElementById("nohp").value = p;
+}
+
+/* ================== Admin hidden login (5x quick click) ================== */
+let clickTimes = [];
+document.getElementById("siteTitle").addEventListener("click", ()=>{
+  const now = Date.now(); clickTimes.push(now);
+  if(clickTimes.length > 6) clickTimes.shift();
+  const last5 = clickTimes.slice(-5);
+  if(last5.length === 5 && (last5[4] - last5[0]) < 1400) {
+    openAdminModal();
+    clickTimes = [];
+  }
+});
+function openAdminModal(){
+  document.getElementById("adminModalBackdrop").classList.remove("hidden");
+  document.getElementById("adminLoginBox").classList.remove("hidden");
+  document.getElementById("adminPanel").classList.add("hidden");
+  document.getElementById("adminUser").value = "";
+  document.getElementById("adminPass").value = "";
+}
+function closeAdminModal(e){
+  if(e && e.target) {
+    // only close when clicking backdrop outside
+    document.getElementById("adminModalBackdrop").classList.add("hidden");
+  } else document.getElementById("adminModalBackdrop").classList.add("hidden");
+}
+
+/* handle admin login */
+function handleAdminLogin(){
+  const u = (document.getElementById("adminUser").value||"").trim();
+  const p = (document.getElementById("adminPass").value||"").trim();
+  if(u === "ZLink" && p === "1234"){
+    document.getElementById("adminLoginBox").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    // fill admin panel inputs from config
+    document.getElementById("logoUrl").value = config.logo || "";
+    document.getElementById("adminNama").value = config.namaLaundry || "";
+    document.getElementById("adminWarna").value = config.warna || "#ff8c00";
+    document.getElementById("adminPhone").value = config.whatsappAdmin || "";
+    document.getElementById("kurirPhone").value = config.whatsappKurir || "";
+    document.getElementById("ghOwner").value = (config.github && config.github.owner) || DEFAULT.github.owner;
+    document.getElementById("ghRepo").value = (config.github && config.github.repo) || DEFAULT.github.repo;
+    document.getElementById("ghBranch").value = (config.github && config.github.branch) || DEFAULT.github.branch;
+    document.getElementById("ghPath").value = (config.github && config.github.path) || DEFAULT.github.path;
+    // load PAT if saved
+    const savedPat = localStorage.getItem(PAT_KEY);
+    if(savedPat) {
+      document.getElementById("ghPAT").value = savedPat;
+      document.getElementById("savePAT").checked = true;
+    } else document.getElementById("ghPAT").value = "";
+    renderSatuanList();
+    renderLinksArea();
+    document.getElementById("adminMsg").textContent = "✅ Login berhasil sebagai Admin.";
+  } else alert("Username / password salah.");
+}
+
+/* ================== admin logo upload handler ================== */
+document.getElementById("logoUpload").addEventListener("change", (ev)=>{
+  const f = ev.target.files && ev.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const dataURL = e.target.result;
+    document.getElementById("logoUrl").value = dataURL;
+    config.logo = dataURL;
+    saveLocalConfig();
+    applyConfigToUI();
+    document.getElementById("adminMsg").textContent = "Logo upload siap (data URL). Klik 'Simpan ke GitHub' untuk menyimpan konfigurasi ke repo.";
+  };
+  reader.readAsDataURL(f);
+});
+
+/* ================== layanan satuan add/remove ================== */
+function tambahSatuan(){
+  const v = (document.getElementById("newSatuan").value||"").trim();
+  if(!v) return alert("Tulis nama layanan satuan yang ingin ditambahkan.");
+  config.layananSatuan = config.layananSatuan || [];
+  config.layananSatuan.push(v);
+  document.getElementById("newSatuan").value = "";
+  renderSatuanList();
+}
+function hapusSatuan(i){
+  if(!confirm("Hapus layanan ini?")) return;
+  config.layananSatuan.splice(i,1);
+  renderSatuanList();
+}
+function renderSatuanList(){
+  const wrap = document.getElementById("satuanList"); wrap.innerHTML = "";
+  (config.layananSatuan || []).forEach((it, idx)=>{
+    const div = document.createElement("div"); div.className = "chip";
+    div.innerHTML = `<div style="flex:1">${it}</div><div><button onclick="hapusSatuan(${idx})" style="background:#f44336;color:#fff;border:none;padding:6px;border-radius:6px">Hapus</button></div>`;
+    wrap.appendChild(div);
+  });
+  populateLayananButtons();
+}
+
+/* ================== links area (textarea -> config.links) ================== */
+function renderLinksArea(){
+  const area = document.getElementById("linksArea");
+  area.value = Object.entries(config.links || {}).map(([k,v])=> `${k}|${v}`).join("\n");
+  const wrap = document.getElementById("linksList"); wrap.innerHTML = "";
+  for(const k in config.links||{}) {
+    const url = config.links[k]||"";
+    const div = document.createElement("div"); div.className="chip";
+    div.innerHTML = `<div style="flex:1"><strong>${k}</strong><div style="font-size:12px;color:#fff4d6">${url||'—'}</div></div>
+      <div><button onclick="copyLink('${escape(k)}')">Salin</button></div>`;
+    wrap.appendChild(div);
+  }
+  renderExternalLinks();
+}
+function renderLinksAreaFromTextarea(){
+  const text = (document.getElementById("linksArea").value||"").trim();
+  const out = {};
+  text.split(/\n/).map(s=>s.trim()).filter(Boolean).forEach(line=>{
+    const parts = line.split('|').map(p=>p.trim());
+    if(parts.length>=2) out[parts[0]] = parts.slice(1).join('|');
+  });
+  config.links = out;
+  saveLocalConfig();
+  renderLinksArea();
+}
+function copyLink(encodedKey){
+  const key = unescape(encodedKey);
+  const text = config.links[key]||"";
+  if(!text) { alert("Tidak ada tautan untuk disalin."); return; }
+  navigator.clipboard?.writeText(text).then(()=> showToast("Tautan disalin ke clipboard."));
+}
+
+/* show external links below form */
+function renderExternalLinks(){
+  const div = document.getElementById("externalLinks"); div.innerHTML = "";
+  const items = Object.keys(config.links||{}).filter(k=>config.links[k]);
+  if(items.length===0) return;
+  const wrap = document.createElement("div"); wrap.className="muted";
+  items.forEach(k=>{
+    const a = document.createElement("a"); a.href = config.links[k]; a.target="_blank"; a.textContent = k;
+    a.style.color = "#fff"; a.style.marginRight = "10px"; a.style.textDecoration="underline";
+    wrap.appendChild(a);
+  });
+  div.appendChild(wrap);
+}
+
+/* ================== save local config ================== */
+function saveLocalConfig(){
+  try { localStorage.setItem(CFG_KEY, JSON.stringify(config)); } catch(e){ console.error("saveLocalConfig",e); }
+}
+
+/* preview local changes from admin inputs */
+function previewLocalAdmin(){
+  const logo = document.getElementById("logoUrl").value.trim();
+  const nama = document.getElementById("adminNama").value.trim();
+  const warna = document.getElementById("adminWarna").value;
+  const adminPhone = document.getElementById("adminPhone").value.trim();
+  const kurirPhone = document.getElementById("kurirPhone").value.trim();
+  config.logo = logo || config.logo;
+  config.namaLaundry = nama || config.namaLaundry;
+  config.warna = warna || config.warna;
+  config.whatsappAdmin = adminPhone || config.whatsappAdmin;
+  config.whatsappKurir = kurirPhone || config.whatsappKurir;
+  // links area parse to config.links but do not persist to github until saved
+  renderLinksAreaFromTextarea();
+  // layanan satuan already manipulated by functions
+  saveLocalConfig();
+  applyConfigToUI();
+  document.getElementById("adminMsg").textContent = "Preview lokal diterapkan. Klik 'Simpan ke GitHub' untuk memperbarui repo.";
+}
+
+/* ================== EXPORT / IMPORT ================== */
+function exportConfig(){
+  const dataStr = JSON.stringify(config, null, 2);
+  const blob = new Blob([dataStr], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "config.json"; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+function importConfigPrompt(){
+  const input = document.createElement("input"); input.type="file"; input.accept="application/json";
+  input.onchange = e=>{
+    const f = input.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      try{
+        const parsed = JSON.parse(ev.target.result);
+        config = Object.assign({}, DEFAULT, parsed);
+        saveLocalConfig(); applyConfigToUI();
+        document.getElementById("adminMsg").textContent = "Config diimpor & diterapkan (lokal).";
+      }catch(err){ alert("File JSON tidak valid"); }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+}
+
+/* ================== GitHub Sync: saveToGitHub ==================
+  Uses GitHub API to PUT file contents. Requires PAT with repo:contents scope (or repo).
+  Stores PAT in localStorage if checkbox checked.
+=========================================================== */
+async function saveToGitHub(){
+  // collect admin inputs
+  const owner = (document.getElementById("ghOwner").value || DEFAULT.github.owner).trim();
+  const repo = (document.getElementById("ghRepo").value || DEFAULT.github.repo).trim();
+  const branch = (document.getElementById("ghBranch").value || DEFAULT.github.branch).trim();
+  const path = (document.getElementById("ghPath").value || DEFAULT.github.path).trim();
+  const pat = (document.getElementById("ghPAT").value||"").trim();
+  if(!owner || !repo || !path) { alert("Isi Owner / Repo / Path terlebih dahulu."); return; }
+  if(!pat) { if(!confirm("PAT kosong. Tanpa PAT, tidak dapat menyimpan ke GitHub. Lanjutkan preview saja?")) return; }
+
+  // update config from admin inputs first
+  config.logo = document.getElementById("logoUrl").value.trim() || config.logo;
+  config.namaLaundry = document.getElementById("adminNama").value.trim() || config.namaLaundry;
+  config.warna = document.getElementById("adminWarna").value || config.warna;
+  config.whatsappAdmin = document.getElementById("adminPhone").value.trim() || config.whatsappAdmin;
+  config.whatsappKurir = document.getElementById("kurirPhone").value.trim() || config.whatsappKurir;
+  config.github = { owner, repo, branch, path };
+  // links
+  renderLinksAreaFromTextarea();
+
+  // store PAT locally if requested
+  if(document.getElementById("savePAT").checked) {
+    try { localStorage.setItem(PAT_KEY, pat); } catch(e){ console.error("save pat", e); }
+  } else localStorage.removeItem(PAT_KEY);
+
+  // prepare content
+  const contentStr = JSON.stringify(config, null, 2);
+  const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
+
+  // get SHA of existing file (if exists)
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  try{
+    document.getElementById("adminMsg").textContent = "Mencoba menyimpan ke GitHub...";
+    // first GET to read sha if present
+    const getRes = await fetch(`${apiUrl}?ref=${branch}`, { headers: { Authorization: `token ${pat}` }});
+    let sha = null;
+    if(getRes.ok){
+      const j = await getRes.json();
+      sha = j.sha;
+    } else {
+      // if 404 -> will create file
+      if(getRes.status === 404) sha = null;
+      else {
+        const txt = await getRes.text();
+        console.error("GET file error", getRes.status, txt);
+        alert("Gagal menghubungi GitHub: " + getRes.status + ". Cek token & izin.");
+        document.getElementById("adminMsg").textContent = "Gagal membaca file di GitHub.";
+        return;
+      }
+    }
+
+    // PUT update
+    const body = {
+      message: `Update config.json via Admin Panel`,
+      content: contentB64,
+      branch: branch
+    };
+    if(sha) body.sha = sha;
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { Authorization: `token ${pat}`, "Content-Type":"application/json" },
+      body: JSON.stringify(body)
+    });
+    if(!putRes.ok){
+      const txt = await putRes.text();
+      console.error("PUT error", putRes.status, txt);
+      alert("Gagal menyimpan ke GitHub. Cek token & izin. Error: " + putRes.status);
+      document.getElementById("adminMsg").textContent = "Gagal menyimpan ke GitHub.";
+      return;
+    }
+    const putJ = await putRes.json();
+    document.getElementById("adminMsg").textContent = "✅ Berhasil menyimpan ke GitHub. Config diperbarui.";
+    // update localStorage config to same content and reload remote config to apply globally
+    saveLocalConfig();
+    await loadRemoteConfigIfExists();
+    showToast("Config tersimpan ke GitHub dan diterapkan.");
+  }catch(err){
+    console.error("saveToGitHub error", err);
+    alert("Terjadi kesalahan saat menyimpan ke GitHub. Lihat console.");
+    document.getElementById("adminMsg").textContent = "Error saat menyimpan ke GitHub.";
+  }
+}
+
+/* clear PAT from localStorage */
+function clearPAT(){ localStorage.removeItem(PAT_KEY); document.getElementById("ghPAT").value = ""; document.getElementById("savePAT").checked = false; document.getElementById("adminMsg").textContent = "PAT dihapus dari perangkat."; }
+
+/* reset config to default */
+function resetConfig(){
+  if(!confirm("Reset semua pengaturan lokal ke default?")) return;
+  config = Object.assign({}, DEFAULT);
+  saveLocalConfig();
+  applyConfigToUI();
+  document.getElementById("adminMsg").textContent = "Reset ke default (lokal). Gunakan 'Simpan ke GitHub' agar berlaku untuk semua user.";
+}
+
+/* ================== load initial flow ================== */
+(function init(){
+  // load local config
+  loadLocalConfig();
+  applyConfigToUI();
+  // try load remote config from GitHub (if exists). If not found, local config used.
+  loadRemoteConfigIfExists();
+  // autofill customer
+  autofillCustomer();
+  document.getElementById("year").textContent = new Date().getFullYear();
+  // show browser open button only if inside a webview (not a full browser)
+  const ua = navigator.userAgent.toLowerCase();
+  const isWebview = ua.includes("wv") || ua.includes("micromessenger") || ua.includes("instagram") || ua.includes("fbios") || ua.includes("fb_") || ua.includes("webview");
+  const btn = document.getElementById("openBrowserBtn");
+  if(isWebview) btn.style.display = "block";
+  else btn.style.display = "none";
+})();
+
+/* ================== open in browser helper ================== */
+function openInBrowser(){
+  showToast("Membuka di browser bawaan...");
+  setTimeout(()=> { window.open(window.location.href, "_blank"); }, 300);
+}
+
+/* ================== apply config from admin inputs to local + UI (Save local only) ================== */
+function saveAdminLocalOnly(){
+  config.logo = document.getElementById("logoUrl").value.trim() || config.logo;
+  config.namaLaundry = document.getElementById("adminNama").value.trim() || config.namaLaundry;
+  config.warna = document.getElementById("adminWarna").value || config.warna;
+  config.whatsappAdmin = document.getElementById("adminPhone").value.trim() || config.whatsappAdmin;
+  config.whatsappKurir = document.getElementById("kurirPhone").value.trim() || config.whatsappKurir;
+  config.github = {
+    owner: document.getElementById("ghOwner").value.trim() || (config.github && config.github.owner) || DEFAULT.github.owner,
+    repo: document.getElementById("ghRepo").value.trim() || (config.github && config.github.repo) || DEFAULT.github.repo,
+    branch: document.getElementById("ghBranch").value.trim() || (config.github && config.github.branch) || DEFAULT.github.branch,
+    path: document.getElementById("ghPath").value.trim() || (config.github && config.github.path) || DEFAULT.github.path
+  };
+  renderLinksAreaFromTextarea();
+  saveLocalConfig();
+  applyConfigToUI();
+}
+
+/* ================== helper: show admin message ================ */
+function showAdminMsg(msg){ try{ document.getElementById("adminMsg").textContent = msg; }catch(e){} }
+
+/* expose functions used inline */
+window.pilihJenis = pilihJenis;
+window.pilihLayanan = pilihLayanan;
+window.pilihDelivery = pilihDelivery;
+window.ambilLokasi = ambilLokasi;
+window.submitOrder = submitOrder;
+window.openAdminModal = openAdminModal;
+window.handleAdminLogin = handleAdminLogin;
+window.tambahSatuan = tambahSatuan;
+window.hapusSatuan = hapusSatuan;
+window.saveToGitHub = saveToGitHub;
+window.previewLocalAdmin = previewLocalAdmin;
+window.resetConfig = resetConfig;
+window.exportConfig = exportConfig;
+window.importConfigPrompt = importConfigPrompt;
+window.clearPAT = clearPAT;
+window.copyLink = copyLink;
+
+/* ensure linksArea is reactive: save on blur (but admin must click Save to GitHub to push) */
+document.getElementById("linksArea").addEventListener("blur", ()=>{ renderLinksAreaFromTextarea(); });
+
+</script>
+
+</body>
+</html>
